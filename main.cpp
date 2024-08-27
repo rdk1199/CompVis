@@ -28,15 +28,14 @@ int main()
 
 	Image sunset("Images/Sunset.png");
 	Image galaxy("Images/Galaxy.png");
-
+	Image colors("Images/Colors.png");
 	//sunset.gain(2.0f);
 	//sunset.gain({ 2, 1, 1, 1 });
 //	sunset.bias(100.0f);
 
-	Image blend = Image::blend(sunset, galaxy, 0.5);
+	Image padded = colors.clamp_pad(100);
 
-
-	blend.save("Images/blended.png");
+	padded.save("Images/padded_colors.png");
 
 	return 0;
 }

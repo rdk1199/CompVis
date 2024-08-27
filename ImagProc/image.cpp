@@ -164,3 +164,117 @@ Image Image::blend(const Image& im1, const Image& im2, float alpha)
 
 	return alpha * im1 + (1.0f - alpha) * im2;
 }
+
+
+Image Image::const_pad(int k, Color col) const
+{
+	if (k < 0)
+	{
+		cout << "cannot pad image negatively" << endl;
+		exit(0);
+	}
+
+	int width = _width + 2 * k;
+	int height = _height + 2 * k;
+
+	vector<vector<Color>> new_px(width, vector<Color>(height, col)); //initialize new image as solid col
+
+	for (int i = k; i < _width + k; i++) //copy original image into middle of new image
+	{
+		for (int j = k; j < _height + k; j++)
+		{
+			new_px[i][j] = pixels[i-k][j-k];
+		}
+	}
+
+	return Image(new_px);
+
+}
+
+
+Image Image::clamp_pad(int k) const
+{
+	if (k < 0)
+	{
+		cout << "cannot pad image negatively" << endl;
+		exit(0);
+	}
+
+	int width = _width + 2 * k;
+	int height = _height + 2 * k;
+
+	vector<vector<Color>> new_px(width, vector<Color>(height));
+
+	for (int i = k; i < _width + k; i++) //copy original image into middle of new image and add clamping on top and bottom
+	{
+		for (int j = k; j < _height + k; j++)
+		{
+			new_px[i][j] = pixels[i - k][j - k];
+		}
+
+		for (int j = 0; j < k; j++)
+		{
+			new_px[i][j] = pixels[i - k][0]; //bottom
+			new_px[i][_height + k + j] = pixels[i - k][_height - 1]; //top
+		}
+
+	}
+
+	
+	//left side
+	for (int i = 0; i < k; i++)
+	{
+		for (int j = k; j < _height + k; j++)
+		{
+			new_px[i][j] = pixels[0][j - k];
+		}
+
+		for (int j = 0; j < k; j++) //lower left corner
+		{
+			new_px[i][j] = pixels[0][0];
+		}
+
+		for (int j = _height + k; j < _height + 2 * k; j++) //upper left corner
+		{
+			new_px[i][j] = pixels[0][_height - 1];
+		}
+
+
+	}
+
+	
+	//right side
+	for (int i = _width + k; i < _width + 2*k; i++)
+	{
+		for (int j = k; j < _height + k; j++)
+		{
+			new_px[i][j] = pixels[_width - 1][j - k];
+		}
+
+		for (int j = 0; j < k; j++) //lower right corner
+		{
+			new_px[i][j] = pixels[_width - 1][0];
+		}
+
+		for (int j = _height + k; j < _height + 2 * k; j++) //upper right corner
+		{
+			new_px[i][j] = pixels[_width-1][_height - 1];
+		}
+
+	}
+
+	return Image(new_px);
+}
+
+/*
+Image Image::const_pad_to_size(int width, int height, Color col) const
+{
+
+}
+
+Image Image::clamp_pad_to_size(int width, int height) const
+{
+
+}
+*/
+

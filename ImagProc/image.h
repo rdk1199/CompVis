@@ -84,6 +84,11 @@ inline Color pow(const Color& c, float g)
 	return { std::pow(c.r, g), std::pow(c.g, g),std::pow(c.b, g),c.a };
 }
 
+struct ImgHistEntry
+{
+	int r = 0, g = 0, b = 0, a = 0;
+};
+
 class Image
 {
 private:
@@ -121,6 +126,18 @@ public:
 	void bias(float val);
 	void bias(Color val);
 	void gamma_correct(float gamma);
+
+
+
+	//padding
+	Image const_pad(int k, Color col = { 0,0,0,0 }) const; //adds a constant color pad of width k around the image 
+	Image clamp_pad(int k) const; //adds clamp padding of width k
+
+	/*
+	//pad uniformly until image is desired size
+	Image const_pad_to_size(int width, int height, Color col = { 0,0,0,0 }) const; 
+	Image clamp_pad_to_size(int width, int height) const;
+	*/
 
 	static Image blend(const Image& im1, const Image& im2, float alpha);
 
