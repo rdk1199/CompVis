@@ -5,16 +5,32 @@
 
 struct complex
 {
-	float re = 0;
-	float im = 0;
+	float re = 0.0f;
+	float im = 0.0f;
+
+	complex() :
+		re(0.0f),
+		im(0.0f)
+	{}
+
+	complex(float real, float imag) :
+		re(real),
+		im(imag)
+	{}
+
+	complex(float real) :
+		re(real),
+		im(0.0f)
+	{}
 
 	complex conjugate() const { return { re, -im }; }
 	float sq_modulus() const { return re * re + im * im; }
-	float modulus() const { return sqrt( re * re + im * im ); }
+	float modulus() const { return sqrt(re * re + im * im); }
 	float real() const { return re; }
 	float imag() const { return im; }
 
-	float operator=(float b) { re = b; im = 0; return b; }
+	float operator=(float b) { re = b; im = 0.0f; return b; }
+
 };
 
 inline complex operator+(const complex& a, const complex& b)
