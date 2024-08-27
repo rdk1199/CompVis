@@ -26,6 +26,9 @@ int main()
 
 	//cout << endl << c;
 
+	Image sunset("Images/Sunset.png");
+
+	sunset.save("Images/new_sunset.png");
 
 	return 0;
 }

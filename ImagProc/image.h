@@ -1,10 +1,13 @@
 
 
-typedef unsigned char byte;
+#include <string>
+#include <vector>
+
+
 
 struct Color
 {
-	byte r = 0, g = 0, b = 0, a = 0;
+	float r = 0, g = 0, b = 0, a = 0;
 };
 
 
@@ -12,9 +15,17 @@ class Image
 {
 private:
 	
-	vector<vector<Color>> pixels;
+	std::vector<std::vector<Color>> pixels;
 
+	int width;
+	int height;
 
 public:
+
+	// I/O
+	Image(std::string file); //load image from file
+	void save(std::string file); //save image to disk
+
+
 
 };
