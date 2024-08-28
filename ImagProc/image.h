@@ -71,6 +71,12 @@ inline Color operator*=(Color& a, float b)
 	return a;
 }
 
+inline std::ostream& operator<<(std::ostream& stream, const Color& col)
+{
+	stream << col.r << " " << col.g << " " << col.b << " " << col.a;
+	return stream;
+}
+
 /*
 inline Color operator*=(float b, Color& a)
 {
@@ -84,10 +90,9 @@ inline Color pow(const Color& c, float g)
 	return { std::pow(c.r, g), std::pow(c.g, g),std::pow(c.b, g),c.a };
 }
 
-struct ImgHistEntry
-{
-	int r = 0, g = 0, b = 0, a = 0;
-};
+typedef Color ImgHistEntry;
+
+
 
 class Image
 {
@@ -134,12 +139,20 @@ public:
 	Image clamp_pad(int k) const; //adds clamp padding of width k
 
 	/*
-	//pad uniformly until image is desired size
+	//pad uniformly until image is desired size (keep original image centered)
 	Image const_pad_to_size(int width, int height, Color col = { 0,0,0,0 }) const; 
 	Image clamp_pad_to_size(int width, int height) const;
 	*/
 
 	static Image blend(const Image& im1, const Image& im2, float alpha);
+
+
+	//image stats
+	std::vector<ImgHistEntry> histogram() const;
+	std::vector<ImgHistEntry> cum_dist() const; //normalized cumulative distribution function
+
+	//filter
+	Image hist_equalize() const; //histogram equalization
 
 
 };

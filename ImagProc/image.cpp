@@ -266,6 +266,88 @@ Image Image::clamp_pad(int k) const
 	return Image(new_px);
 }
 
+vector<ImgHistEntry> Image::histogram() const
+{
+	vector<ImgHistEntry> out(256);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			int r_val = static_cast<int>(std::round(pixels[i][j].r));
+			int g_val = static_cast<int>(std::round(pixels[i][j].g));
+			int b_val = static_cast<int>(std::round(pixels[i][j].b));
+			int a_val = static_cast<int>(std::round(pixels[i][j].a));
+
+			r_val = std::clamp(r_val, 0, 255);
+			g_val = std::clamp(g_val, 0, 255);
+			b_val = std::clamp(b_val, 0, 255);
+			a_val = std::clamp(a_val, 0, 255);
+
+			out[r_val].r++;
+			out[g_val].g++;
+			out[b_val].b++;
+			out[a_val].a++;
+
+		}
+	}
+
+	return out;
+}
+
+vector<ImgHistEntry> Image::cum_dist() const
+{
+	vector<ImgHistEntry> out(256);
+	vector<ImgHistEntry> hist = histogram();
+
+	unsigned long int N = _width * _height; 
+
+	out[0] =  hist[0];
+
+	for (int i = 1; i < out.size(); i++)
+	{
+		out[i] = out[i - 1] + hist[i];
+	}
+	
+	for (int i = 0; i < out.size(); i++)
+	{
+		out[i] *= 1.0f / N;
+	}
+		
+	return out;
+}
+
+Image Image::hist_equalize() const
+{
+	vector<vector<Color>> new_px(_width, vector<Color>(_height));
+
+	vector<ImgHistEntry> cum_image = cum_dist();
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			int r_val = static_cast<int>(std::round(pixels[i][j].r));
+			int g_val = static_cast<int>(std::round(pixels[i][j].g));
+			int b_val = static_cast<int>(std::round(pixels[i][j].b));
+			int a_val = static_cast<int>(std::round(pixels[i][j].a));
+
+			r_val = std::clamp(r_val, 0, 255);
+			g_val = std::clamp(g_val, 0, 255);
+			b_val = std::clamp(b_val, 0, 255);
+			a_val = std::clamp(a_val, 0, 255);
+
+			new_px[i][j].r = 255.0 * cum_image[r_val].r;
+			new_px[i][j].g = 255.0 * cum_image[g_val].g;
+			new_px[i][j].b = 255.0 * cum_image[b_val].b;
+			new_px[i][j].a = 255.0 * cum_image[a_val].a;
+
+		}
+	}
+
+	return Image(new_px);
+}
+
 /*
 Image Image::const_pad_to_size(int width, int height, Color col) const
 {

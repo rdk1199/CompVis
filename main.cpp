@@ -35,7 +35,19 @@ int main()
 
 	Image padded = colors.clamp_pad(100);
 
+	vector<ImgHistEntry> histogram = colors.histogram();
+	vector<ImgHistEntry> cum_dist = colors.cum_dist();
+
 	padded.save("Images/padded_colors.png");
+
+	Image equalized = colors.hist_equalize();
+	equalized.save("Images/equalized_colors.png");
+
+	Image eq_sunset = sunset.hist_equalize();
+	eq_sunset.save("Images/equalized_sunset.png");
+
+	Image eq_galaxy = galaxy.hist_equalize();
+	eq_galaxy.save("Images/equalized_galaxy.png");
 
 	return 0;
 }
