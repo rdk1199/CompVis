@@ -58,7 +58,7 @@ public:
 	int n_rows() const { return matrix.size(); }
 	int n_cols() const { return matrix.size()? matrix[0].size() : 0; }
 
-	bool is_square() const { return matrix.size() ? matrix.size() == matrix[0].size : true; }
+	bool is_square() const { return matrix.size() ? matrix.size() == matrix[0].size() : true; }
 
 	static Matrix<T> identity(int n); //n by n identity matrix
 

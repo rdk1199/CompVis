@@ -348,6 +348,55 @@ Image Image::hist_equalize() const
 	return Image(new_px);
 }
 
+Color compute_lin_fil_px_val(int i, int j, Image& padded_img, const Matrix<float>& filter) //helper function for lin_filter
+{
+	Color col;
+
+	int rows = filter.n_rows();
+	int cols = filter.n_cols();
+
+	int pad_amt = std::max(rows, cols);
+
+	for (int k = 0; k < rows; k++)
+	{
+		for (int l = 0; l < cols; l++)
+		{
+			col += filter.at(k,l) * padded_img[i - (rows / 2) + k + pad_amt][j - (cols / 2) + l + pad_amt];
+		}
+	}
+
+	return col;
+}
+
+Image Image::lin_filter(const Matrix<float>& filter) const
+{
+	if (filter.n_cols() % 2 == 0 || filter.n_rows() % 2 == 0 || filter.n_rows() == 0)
+	{
+		cout << "invalid linear filter matrix; matrix must be nonempty and have odd number of rows and columns" << endl;
+		exit(1);
+	}
+
+	int pad_amt = std::max(filter.n_cols(), filter.n_rows());
+
+	Image padded_img = clamp_pad(pad_amt);
+
+	vector<vector<Color>> new_px(_width, vector<Color>(_height));
+	Image out(new_px);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			out[i][j] = compute_lin_fil_px_val(i, j, padded_img, filter);
+			
+		}
+	}
+
+
+
+	return out;
+}
+
 /*
 Image Image::const_pad_to_size(int width, int height, Color col) const
 {

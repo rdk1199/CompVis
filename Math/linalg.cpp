@@ -281,6 +281,9 @@ std::ostream& operator<<(std::ostream& stream, const std::vector<float>& v);
 std::ostream& operator<<(std::ostream& stream, const std::vector<complex>& v);
 
 
+template class Matrix<float>;
+template class Matrix<complex>;
+
 //matrix operations
 template Matrix<float> operator+(const Matrix<float>& A, const Matrix<float>& B);
 template Matrix<complex> operator+(const Matrix<complex>& A, const Matrix<complex>& B);

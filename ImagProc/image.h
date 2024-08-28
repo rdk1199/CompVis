@@ -4,6 +4,8 @@
 #include <vector>
 #include <cmath>
 
+#include "../Math/linalg.h"
+
 struct Color
 {
 	float r = 0, g = 0, b = 0, a = 0;
@@ -92,7 +94,7 @@ inline Color pow(const Color& c, float g)
 
 typedef Color ImgHistEntry;
 
-
+enum class ImagePadType {zero, clamp};
 
 class Image
 {
@@ -103,7 +105,6 @@ private:
 	int _width;
 	int _height;
 
-	std::vector<Color>& operator[](int i) { return pixels[i]; }
 
 
 
@@ -122,7 +123,7 @@ public:
 
 	//accessors
 	Color at(int i, int j) const { return pixels[i][j]; }
-
+	std::vector<Color>& operator[](int i) { return pixels[i]; }
 
 
 	//point processes
@@ -153,6 +154,7 @@ public:
 
 	//filter
 	Image hist_equalize() const; //histogram equalization
+	Image lin_filter(const Matrix<float>& filter) const; //clamp pads image, then applies linear filter - filter must be square matrix of odd size
 
 
 };
