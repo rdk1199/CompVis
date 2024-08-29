@@ -69,5 +69,11 @@ int main()
 	Image corner_galaxy = 10 * galaxy.corner();
 	corner_galaxy.save("Images/corner_galaxy.png");
 
+	Image color_integral = colors.integral().normalize();
+	color_integral.save("Images/color_integral.png");
+
+	Image galaxy_integral = galaxy.integral().normalize();
+	galaxy_integral.save("Images/galaxy_integral.png");
+
 	return 0;
 }

@@ -455,3 +455,49 @@ Image Image::corner() const
 
 	return lin_filter(corners);
 }
+
+Image Image::integral() const
+{
+	vector<vector<Color>> integral_px(_width, vector<Color>(_height));
+
+	integral_px[0][0] = pixels[0][0]; //left bottom corner
+
+	for (int j = 1; j < _height; j++) //get left edge
+	{
+		integral_px[0][j] = integral_px[0][j - 1] + pixels[0][j];
+	}
+
+	for (int i = 1; i < _width; i++) //get bottom edge
+	{
+		integral_px[i][0] = integral_px[i - 1][0] + pixels[i][0];
+	}
+
+	for (int i = 1; i < _width; i++) //now fill the rest
+	{
+		for (int j = 1; j < _height; j++)
+		{
+			integral_px[i][j] = integral_px[i - 1][j] + integral_px[i][j - 1] - integral_px[i - 1][j - 1] + pixels[i][j];
+		}
+	}
+
+	return Image(integral_px);
+}
+
+Image Image::normalize() const
+{
+	float max = 0.0f;
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _width; j++)
+		{
+			max = std::max({ max, pixels[i][j].r, pixels[i][j].g, pixels[i][j].b });
+		}
+	}
+
+	float scale = 255.0f / max;
+
+	return scale * (*this);
+
+
+}

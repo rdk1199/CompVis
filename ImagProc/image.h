@@ -161,6 +161,9 @@ public:
 	Image sobel() const;
 	Image corner() const;
 
+	Image integral() const; //return integral image
+	Image normalize() const; //scale color values so max is 255
+
 };
 
 Image operator+(const Image& im1, const Image& im2);
