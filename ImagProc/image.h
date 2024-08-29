@@ -14,7 +14,7 @@ struct Color
 
 inline Color operator+(const Color& a, const Color& b)
 {
-	return { a.r + b.r, a.g + b.g, a.b + b.b, std::max(a.a, b.a) };
+	return { a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a };
 }
 
 inline Color operator+(const Color& a, float b)
@@ -155,7 +155,11 @@ public:
 	//filter
 	Image hist_equalize() const; //histogram equalization
 	Image lin_filter(const Matrix<float>& filter) const; //clamp pads image, then applies linear filter - filter must be square matrix of odd size
-
+	
+	Image box_filter(int box_size) const;
+	Image gauss_blur() const;
+	Image sobel() const;
+	Image corner() const;
 
 };
 

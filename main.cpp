@@ -51,38 +51,23 @@ int main()
 	Image eq_galaxy = galaxy.hist_equalize();
 	Image::blend(galaxy, eq_galaxy, .8f).save("Images/equalized_galaxy.png");
 
-
-	Matrix<float> gauss_filter(
-		{ {1,4,6,4,1},
-		{4,16,24,16,4},
-		{6,24,36,24,6},
-		{4,16,24,16,4},
-		{1,4,6,4,1} }
-
-	);
-
-	Matrix<float> id_filter(
-		{
-			{0,0,0,0,0},
-			{0,0,0,0,0},
-			{0,0,1,0,0},
-			{0,0,0,0,0},
-			{0,0,0,0,0}
-		}
-	);
-
-	gauss_filter = (1.0f / 256.0f) * gauss_filter;
-
-	Image gauss_text = text.lin_filter(gauss_filter);
-
+	Image gauss_text = text.gauss_blur();
 	gauss_text.save("Images/gauss_text.png");
-	Image id_text = text.lin_filter(id_filter);
 
-	id_text.save("Images/id_text.png");
+	Image sobel_colors = 10*colors.sobel();
+	sobel_colors.save("Images/sobel_colors.png");
 
-	Image id_colors = colors.lin_filter(id_filter);
-	id_colors.save("Images/id_colors.png");
+	Image corner_colors = 10 * colors.corner();
+	corner_colors.save("Images/corner_colors.png");
 
+	Image corner_sunset = 10 * sunset.corner();
+	corner_sunset.save("Images/corner_sunset.png");
+
+	Image box_colors = colors.box_filter(11);
+	box_colors.save("Images/box_colors.png");
+
+	Image corner_galaxy = 10 * galaxy.corner();
+	corner_galaxy.save("Images/corner_galaxy.png");
 
 	return 0;
 }

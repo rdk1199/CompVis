@@ -397,15 +397,61 @@ Image Image::lin_filter(const Matrix<float>& filter) const
 	return out;
 }
 
-/*
-Image Image::const_pad_to_size(int width, int height, Color col) const
+Image Image::box_filter(int size) const
 {
+	size = size % 2 ? size: size + 1;//make the box odd sized
+
+	Matrix<float> box(vector<vector<float>>(size, vector<float>(size, 1.0f/(size * size))));
+
+	return lin_filter(box);
+
 
 }
 
-Image Image::clamp_pad_to_size(int width, int height) const
+Image Image::gauss_blur() const
 {
 
-}
-*/
+	Matrix<float> gauss_filter(
+		{ {1,4,6,4,1},
+		{4,16,24,16,4},
+		{6,24,36,24,6},
+		{4,16,24,16,4},
+		{1,4,6,4,1} }
 
+	);
+
+	gauss_filter = (1.0f / 256.0f) * gauss_filter;
+
+	return lin_filter(gauss_filter);
+}
+
+Image Image::sobel() const
+{
+	Matrix<float> sobel(
+		{
+		{-1,0,1},
+		{-2,0,2},
+		{-1,0,1}
+		}
+	);
+
+	sobel = (1.0f / 8) * sobel;
+
+	return lin_filter(sobel);
+}
+
+Image Image::corner() const
+{
+
+	Matrix<float> corners(
+		{
+			{1, -2, 1},
+			{-2, 4, -2},
+			{1, -2, 1}
+		}
+	);
+
+	corners = 0.25f * corners;
+
+	return lin_filter(corners);
+}
