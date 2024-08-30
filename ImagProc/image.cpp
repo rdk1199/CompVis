@@ -143,6 +143,27 @@ Image operator+(const Image& im1, const Image& im2)
 	return Image(new_px);
 }
 
+Image operator-(const Image& im1, const Image& im2)
+{
+	if (im1.width() != im2.width() || im1.height() != im2.height())
+	{
+		cout << "illegal image operation attempted" << endl;
+		exit(0);
+	}
+
+	vector<vector<Color>> new_px(im1.width(), vector<Color>(im1.height()));
+
+	for (int i = 0; i < im1.width(); i++)
+	{
+		for (int j = 0; j < im1.height(); j++)
+		{
+			new_px[i][j] = im1.at(i, j) - im2.at(i, j);
+		}
+	}
+
+	return Image(new_px);
+}
+
 Image operator*(float c, const Image& img)
 {
 	vector<vector<Color>> new_px(img.width(), vector<Color>(img.height()));
@@ -156,6 +177,11 @@ Image operator*(float c, const Image& img)
 	}
 
 	return Image(new_px);
+}
+
+Image Image::copy() const 
+{
+	return Image(pixels);
 }
 
 Image Image::blend(const Image& im1, const Image& im2, float alpha)
@@ -500,4 +526,39 @@ Image Image::normalize() const
 	return scale * (*this);
 
 
+}
+
+Image Image::sharpen(float alpha) const
+{
+	return  (1.0f + alpha) * (*this) - alpha * gauss_blur();
+}
+
+Image Image::median(int radius) const
+{
+	if (radius < 0)
+	{
+		cout << "box radius for median filter must be non-negative";
+	}
+
+	if (radius == 0)
+	{
+		return copy();
+	}
+
+	Image padded_img = clamp_pad(radius);
+
+	vector<vector<Color>> new_px(_width, vector<Color>(_height));
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+
+			
+
+
+		}
+	}
+
+	return Image(new_px);
 }

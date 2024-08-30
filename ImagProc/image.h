@@ -14,7 +14,7 @@ struct Color
 
 inline Color operator+(const Color& a, const Color& b)
 {
-	return { a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a };
+	return { a.r + b.r, a.g + b.g, a.b + b.b, std::max(a.a , b.a) };
 }
 
 inline Color operator+(const Color& a, float b)
@@ -42,7 +42,7 @@ inline Color operator+=(Color& a, float b)
 
 inline Color operator-(const Color& a, const Color& b)
 {
-	return { a.r - b.r, a.g - b.g, a.b - b.b, a.a - b.a };
+	return { a.r - b.r, a.g - b.g, a.b - b.b, std::min(a.a, b.a) };
 }
 
 inline Color operator*(const Color& a, const Color& b)
@@ -153,18 +153,33 @@ public:
 	std::vector<ImgHistEntry> cum_dist() const; //normalized cumulative distribution function
 
 	//filter
+	Image copy() const; //returns identical copy
+	
 	Image hist_equalize() const; //histogram equalization
 	Image lin_filter(const Matrix<float>& filter) const; //clamp pads image, then applies linear filter - filter must be square matrix of odd size
 	
+	//common linear filters
 	Image box_filter(int box_size) const;
 	Image gauss_blur() const;
 	Image sobel() const;
 	Image corner() const;
 
+
+	//misc operations
 	Image integral() const; //return integral image
 	Image normalize() const; //scale color values so max is 255
 
+	//non-linear filters
+	Image sharpen(float alpha = 0.25f) const;
+	Image median(int radius) const; //median filter with given radius
 };
 
 Image operator+(const Image& im1, const Image& im2);
+Image operator-(const Image& im1, const Image& im2);
 Image operator*(float c, const Image& img);
+
+
+inline Image operator*(const Matrix<float>& filter, const Image& img) //convolve filter with image
+{
+	return img.lin_filter(filter);
+}

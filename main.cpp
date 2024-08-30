@@ -30,6 +30,7 @@ int main()
 	Image galaxy("Images/Galaxy.png");
 	Image colors("Images/Colors.png");
 	Image text("Images/Text.png");
+	Image bird("Images/Bird.png");
 
 	//sunset.gain(2.0f);
 	//sunset.gain({ 2, 1, 1, 1 });
@@ -74,6 +75,10 @@ int main()
 
 	Image galaxy_integral = galaxy.integral().normalize();
 	galaxy_integral.save("Images/galaxy_integral.png");
+	
+	Image bird_sharpen = bird.sharpen(3.0f);
+	bird_sharpen.save("Images/bird_sharpen.png");
+
 
 	return 0;
 }

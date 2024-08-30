@@ -1,4 +1,8 @@
 build:
-	g++ -c -std=c++17 main.cpp Math/linalg.cpp ImagProc/image.cpp -Wno-narrowing
-	g++ -o comp-vis main.o linalg.o image.o -lpng
+	g++ -c -std=c++17 *.cpp Math/*.cpp ImagProc/*.cpp -Wno-narrowing
+	g++ -o comp-vis *.o -lpng
 	./comp-vis
+
+
+clean: 
+	rm -f *.o
