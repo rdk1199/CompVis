@@ -85,6 +85,12 @@ Image::Image(const std::vector<std::vector<Color>>& px) :
 	pixels(px)
 {}
 
+Image::Image(int width, int height, Color col) :
+	_width(width),
+	_height(height),
+	pixels(vector<vector<Color>>(width, vector<Color>(height, col)))
+{}
+
 void Image::gain(float val)
 {
 	for (int i = 0; i <_width; i++)
@@ -148,17 +154,17 @@ Image operator+(const Image& im1, const Image& im2)
 		exit(0);
 	}
 
-	vector<vector<Color>> new_px(im1.width(), vector<Color>(im1.height()));
+	Image out(im1.width(), im1.height());
 
 	for (int i = 0; i < im1.width(); i++)
 	{
 		for (int j = 0; j < im1.height(); j++)
 		{
-			new_px[i][j] = im1.at(i, j) + im2.at(i, j);
+			out[i][j] = im1.at(i, j) + im2.at(i, j);
 		}
 	}
 
-	return Image(new_px);
+	return out;
 }
 
 Image operator-(const Image& im1, const Image& im2)
@@ -169,32 +175,32 @@ Image operator-(const Image& im1, const Image& im2)
 		exit(0);
 	}
 
-	vector<vector<Color>> new_px(im1.width(), vector<Color>(im1.height()));
+	Image out(im1.width(), im1.height());
 
 	for (int i = 0; i < im1.width(); i++)
 	{
 		for (int j = 0; j < im1.height(); j++)
 		{
-			new_px[i][j] = im1.at(i, j) - im2.at(i, j);
+			out[i][j] = im1.at(i, j) - im2.at(i, j);
 		}
 	}
 
-	return Image(new_px);
+	return out;
 }
 
 Image operator*(float c, const Image& img)
 {
-	vector<vector<Color>> new_px(img.width(), vector<Color>(img.height()));
+	Image out(img.width(), img.height());
 
 	for (int i = 0; i < img.width(); i++)
 	{
 		for (int j = 0; j < img.height(); j++)
 		{
-			new_px[i][j] = c * img.at(i, j);
+			out[i][j] = c * img.at(i, j);
 		}
 	}
 
-	return Image(new_px);
+	return out;
 }
 
 Image Image::copy() const 
@@ -221,7 +227,7 @@ Image Image::const_pad(int k, Color col) const
 	int width = _width + 2 * k;
 	int height = _height + 2 * k;
 
-	vector<vector<Color>> new_px(width, vector<Color>(height, col)); //initialize new image as solid col
+	Image new_px(width, height, col); //initialize new image as solid col
 
 	for (int i = k; i < _width + k; i++) //copy original image into middle of new image
 	{
@@ -231,7 +237,7 @@ Image Image::const_pad(int k, Color col) const
 		}
 	}
 
-	return Image(new_px);
+	return new_px;
 
 }
 
@@ -247,7 +253,7 @@ Image Image::clamp_pad(int k) const
 	int width = _width + 2 * k;
 	int height = _height + 2 * k;
 
-	vector<vector<Color>> new_px(width, vector<Color>(height));
+	Image new_px(width, height);
 
 	for (int i = k; i < _width + k; i++) //copy original image into middle of new image and add clamping on top and bottom
 	{
@@ -307,7 +313,7 @@ Image Image::clamp_pad(int k) const
 
 	}
 
-	return Image(new_px);
+	return new_px;
 }
 
 vector<ImgHistEntry> Image::histogram() const
@@ -363,7 +369,7 @@ vector<ImgHistEntry> Image::cum_dist() const
 
 Image Image::hist_equalize() const
 {
-	vector<vector<Color>> new_px(_width, vector<Color>(_height));
+	Image out(_width, _height);
 
 	vector<ImgHistEntry> cum_image = cum_dist();
 
@@ -381,15 +387,15 @@ Image Image::hist_equalize() const
 			b_val = std::clamp(b_val, 0, 255);
 			a_val = std::clamp(a_val, 0, 255);
 
-			new_px[i][j].r = 255.0 * cum_image[r_val].r;
-			new_px[i][j].g = 255.0 * cum_image[g_val].g;
-			new_px[i][j].b = 255.0 * cum_image[b_val].b;
-			new_px[i][j].a = 255.0 * cum_image[a_val].a;
+			out[i][j].r = 255.0 * cum_image[r_val].r;
+			out[i][j].g = 255.0 * cum_image[g_val].g;
+			out[i][j].b = 255.0 * cum_image[b_val].b;
+			out[i][j].a = 255.0 * cum_image[a_val].a;
 
 		}
 	}
 
-	return Image(new_px);
+	return out;
 }
 
 Color compute_lin_fil_px_val(int i, int j, Image& padded_img, const Matrix<float>& filter) //helper function for lin_filter
@@ -424,15 +430,14 @@ Image Image::lin_filter(const Matrix<float>& filter) const
 
 	Image padded_img = clamp_pad(pad_amt);
 
-	vector<vector<Color>> new_px(_width, vector<Color>(_height));
-	Image out(new_px);
+	Image out(_width, _height);
+
 
 	for (int i = 0; i < _width; i++)
 	{
 		for (int j = 0; j < _height; j++)
 		{
 			out[i][j] = compute_lin_fil_px_val(i, j, padded_img, filter);
-			
 		}
 	}
 
@@ -502,29 +507,29 @@ Image Image::corner() const
 
 Image Image::integral() const
 {
-	vector<vector<Color>> integral_px(_width, vector<Color>(_height));
+	Image out(_width, _height);
 
-	integral_px[0][0] = pixels[0][0]; //left bottom corner
+	out[0][0] = pixels[0][0]; //left bottom corner
 
 	for (int j = 1; j < _height; j++) //get left edge
 	{
-		integral_px[0][j] = integral_px[0][j - 1] + pixels[0][j];
+		out[0][j] = out[0][j - 1] + pixels[0][j];
 	}
 
 	for (int i = 1; i < _width; i++) //get bottom edge
 	{
-		integral_px[i][0] = integral_px[i - 1][0] + pixels[i][0];
+		out[i][0] = out[i - 1][0] + pixels[i][0];
 	}
 
 	for (int i = 1; i < _width; i++) //now fill the rest
 	{
 		for (int j = 1; j < _height; j++)
 		{
-			integral_px[i][j] = integral_px[i - 1][j] + integral_px[i][j - 1] - integral_px[i - 1][j - 1] + pixels[i][j];
+			out[i][j] = out[i - 1][j] + out[i][j - 1] - out[i - 1][j - 1] + pixels[i][j];
 		}
 	}
 
-	return Image(integral_px);
+	return out;
 }
 
 Image Image::normalize() const
@@ -565,7 +570,7 @@ Image Image::median(int radius) const
 
 	Image padded_img = clamp_pad(radius);
 
-	vector<vector<Color>> new_px(_width, vector<Color>(_height));
+	Image out(_width, _height);
 
 	for (int i = 0; i < _width; i++)
 	{
@@ -583,11 +588,11 @@ Image Image::median(int radius) const
 
 			}
 
-			new_px[i][j] = col_median(nbrhood);
+			out[i][j] = col_median(nbrhood);
 		}
 	}
 
-	return Image(new_px);
+	return out;
 }
 
 //bilateral helpers
@@ -618,7 +623,7 @@ Image Image::bilateral(int radius, float sigma_d, float sigma_r) const
 		exit(1);
 	}
 
-	vector<vector<Color>> new_px(_width, vector<Color>(_height));
+	Image out(_width, _height);
 
 	Image padded_img = clamp_pad(radius);
 
@@ -641,11 +646,87 @@ Image Image::bilateral(int radius, float sigma_d, float sigma_r) const
 				}
 			}
 
-			new_px[i][j] = (1.0f / total_weight) * weighted_sum;
+			out[i][j] = (1.0f / total_weight) * weighted_sum;
 
 		}
 	}
 
-	return Image(new_px);
+	return out;
 
+}
+
+Image Image::iter_bilateral(unsigned int iter, int radius, float sigma_d, float sigma_r) const
+{
+	Image current = *this;
+
+	for (int i = 0; i < iter; i++)
+	{
+		current = current.bilateral(radius, sigma_d, sigma_r);
+	}
+
+	return current;
+}
+
+Image Image::max_monochrome() const
+{
+	Image out(_width, _height);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			float max = std::max({ pixels[i][j].r, pixels[i][j].g, pixels[i][j].b });
+			out[i][j] = { max, max, max, pixels[i][j].a };
+		}
+	}
+
+	return out;
+}
+
+Image Image::mean_monochrome() const
+{
+	Image out(_width, _height);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			float avg = mean(vector<float>({ pixels[i][j].r, pixels[i][j].g, pixels[i][j].b }));
+			out[i][j] = { avg, avg, avg, pixels[i][j].a };
+		}
+	}
+
+	return out;
+}
+
+Image Image::grayscale() const
+{
+	Image out(_width, _height);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			float val = 0.2126 * pixels[i][j].r + 0.7152 * pixels[i][j].g + 0.0722 * pixels[i][j].b;
+			out[i][j] = { val,val,val, pixels[i][j].a };
+		}
+	}
+
+	return out;
+}
+
+Image Image::binarize(float threshold) const
+{
+	Image out(_width, _height);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			float val = pixels[i][j].r/255.0 >= threshold ? 255.0f : 0.0f;
+			out[i][j] = { val, val, val, 255.0f };
+		}
+	}
+	
+	return out;
 }

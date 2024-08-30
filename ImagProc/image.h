@@ -110,9 +110,6 @@ private:
 	int _width;
 	int _height;
 
-
-
-
 public:
 
 	// I/O
@@ -121,6 +118,7 @@ public:
 
 	//constructors
 	Image(const std::vector<std::vector<Color>>& px); //create image from bitmap
+	Image(int width, int height, Color col = { 0,0,0,0 }); //create constant image of given size and color  
 
 	//properties
 	int width() const { return _width; }
@@ -180,6 +178,15 @@ public:
 	Image sharpen(float alpha = 0.25f) const;
 	Image median(int radius) const; //median filter with given radius (slow)
 	Image bilateral(int radius, float sigma_d, float sigma_r) const;
+	Image iter_bilateral(unsigned int iter, int radius, float sigma_d, float sigma_r) const;
+
+	//monochromatize
+	Image max_monochrome() const; //makes black and white copy -> takes the max of the R,G,B channels
+	Image mean_monochrome() const; //makes black and white copy, taking the mean of each channel
+	Image grayscale() const; //makes black and white copy using proper weighting to account for luminance
+
+	//binary image processing 
+	Image binarize(float threshold) const; //turn grayscale images into binary with given threshold (between 0 and 1)
 };
 
 Image operator+(const Image& im1, const Image& im2);

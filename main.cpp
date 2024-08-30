@@ -83,13 +83,30 @@ int main()
 	bird_median.save("Images/bird_median.png");
 
 	Image color_median = colors.median(3);
-	color_median.save("Images/color_median.png");*/
+	color_median.save("Images/color_median.png");
 
+	
 	Image color_bilat = colors.bilateral(4, 1.0, 1.0);
 	color_bilat.save("Images/color_bilat.png");
 
 	Image bird_bilat = bird.bilateral(4, 1.0, 1.0);
 	bird_bilat.save("Images/bird_bilat.png");
+	
+
+	Image bird_iter_bilateral = bird.iter_bilateral(3, 4, 1.0, 1.0);
+	bird_iter_bilateral.save("Images/bird_iter_bilat.png");
+	*/
+
+	Image bird_max_mono = bird.max_monochrome();
+	Image bird_mean_mono = bird.mean_monochrome();
+	Image bird_grayscale = bird.grayscale();
+	Image bird_binarize = bird_grayscale.binarize(0.5f);
+
+	bird_max_mono.save("Images/bird_max_mono.png");
+	bird_mean_mono.save("Images/bird_mean_mono.png");
+	bird_grayscale.save("Images/bird_grayscale.png");
+	bird_binarize.save("Images/bird_binary.png");
+	
 
 
 	return 0;
