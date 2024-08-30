@@ -35,7 +35,7 @@ int main()
 	//sunset.gain(2.0f);
 	//sunset.gain({ 2, 1, 1, 1 });
 //	sunset.bias(100.0f);
-
+	/*
 	Image padded = colors.clamp_pad(100);
 
 	vector<ImgHistEntry> histogram = colors.histogram();
@@ -78,6 +78,18 @@ int main()
 	
 	Image bird_sharpen = bird.sharpen(3.0f);
 	bird_sharpen.save("Images/bird_sharpen.png");
+
+	Image bird_median = bird.median(2);
+	bird_median.save("Images/bird_median.png");
+
+	Image color_median = colors.median(3);
+	color_median.save("Images/color_median.png");*/
+
+	Image color_bilat = colors.bilateral(4, 1.0, 1.0);
+	color_bilat.save("Images/color_bilat.png");
+
+	Image bird_bilat = bird.bilateral(4, 1.0, 1.0);
+	bird_bilat.save("Images/bird_bilat.png");
 
 
 	return 0;

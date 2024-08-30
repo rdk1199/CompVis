@@ -9,6 +9,9 @@
 struct Color
 {
 	float r = 0, g = 0, b = 0, a = 0;
+
+	float sq_mag() { return (r * r + g * g + b * b + a * a)/(255.0f * 255.0f); } //magnitude of RGBA values in 0-1 scale
+
 };
 
 
@@ -78,6 +81,8 @@ inline std::ostream& operator<<(std::ostream& stream, const Color& col)
 	stream << col.r << " " << col.g << " " << col.b << " " << col.a;
 	return stream;
 }
+
+Color col_median(std::vector<Color> colors);
 
 /*
 inline Color operator*=(float b, Color& a)
@@ -158,6 +163,8 @@ public:
 	Image hist_equalize() const; //histogram equalization
 	Image lin_filter(const Matrix<float>& filter) const; //clamp pads image, then applies linear filter - filter must be square matrix of odd size
 	
+	//FILTERS; all filters clamp pad the image before being applied
+
 	//common linear filters
 	Image box_filter(int box_size) const;
 	Image gauss_blur() const;
@@ -171,7 +178,8 @@ public:
 
 	//non-linear filters
 	Image sharpen(float alpha = 0.25f) const;
-	Image median(int radius) const; //median filter with given radius
+	Image median(int radius) const; //median filter with given radius (slow)
+	Image bilateral(int radius, float sigma_d, float sigma_r) const;
 };
 
 Image operator+(const Image& im1, const Image& im2);

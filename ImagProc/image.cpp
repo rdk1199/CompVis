@@ -1,12 +1,30 @@
 #include <png++/png.hpp>
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 
 using std::cout;
 using std::endl;
 using std::vector;
 
 #include "image.h"
+#include "../Math/stats.h"
+
+Color col_median(std::vector<Color> colors)
+{
+	vector<float> r, g, b,a;
+
+	for (int i = 0; i < colors.size(); i++)
+	{
+		r.push_back(colors[i].r);
+		g.push_back(colors[i].g);
+		b.push_back(colors[i].b);
+		a.push_back(colors[i].a);
+	}
+
+	return { median(r), median(g), median(b), median(a) };
+
+}
 
 Image::Image(std::string file)
 {
@@ -554,11 +572,80 @@ Image Image::median(int radius) const
 		for (int j = 0; j < _height; j++)
 		{
 
-			
+			vector<Color> nbrhood;
 
+			for (int k = -radius; k <= radius; k++)
+			{
+				for (int l = -radius; l <= radius; l++)
+				{
+					nbrhood.push_back(padded_img[i + radius + k][j + radius + l]);
+				}
+
+			}
+
+			new_px[i][j] = col_median(nbrhood);
+		}
+	}
+
+	return Image(new_px);
+}
+
+//bilateral helpers
+double bilateral_domain_kernel(int dx, int dy, float sigma_d)
+{
+	double sq_dist = dx * dx + dy * dy;
+
+	double out = exp(-sq_dist / (2 * sigma_d * sigma_d));
+
+	return out;
+
+}
+
+double bilateral_range_kernel(Color center_color, Color nbr_color, float sigma_r)
+{
+	double sq_dist = (nbr_color - center_color).sq_mag();
+
+	double out = exp(-sq_dist / (2 * sigma_r * sigma_r));
+
+	return out;
+}
+
+Image Image::bilateral(int radius, float sigma_d, float sigma_r) const
+{
+	if (radius < 0)
+	{
+		cout << "ERROR: bilateral filter radius must be non-negative" << endl;
+		exit(1);
+	}
+
+	vector<vector<Color>> new_px(_width, vector<Color>(_height));
+
+	Image padded_img = clamp_pad(radius);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			Color weighted_sum = { 0,0,0,0 };
+			float total_weight = 0.0f;
+
+			for (int k = -radius; k <= radius; k++)
+			{
+				for (int l = -radius; l <= radius; l++)
+				{
+					float bilat_wt_func = bilateral_domain_kernel(k, l, sigma_d) * bilateral_range_kernel(padded_img[i + radius][j + radius], padded_img[i + radius + k][j + radius + l], sigma_r);
+
+					weighted_sum += bilat_wt_func * padded_img[i + radius + k][j + radius + l];
+					total_weight += bilat_wt_func;
+			
+				}
+			}
+
+			new_px[i][j] = (1.0f / total_weight) * weighted_sum;
 
 		}
 	}
 
 	return Image(new_px);
+
 }
