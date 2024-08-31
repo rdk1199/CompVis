@@ -34,11 +34,22 @@ T mean(const vector<T>& vals)
 
 }
 
+template<class T>
+T threshold(T val, T thresh)
+{
+	return val >= thresh ? 1 : 0;
+}
+
+
+
 template float mean(const vector<float>& vals);
 
 template float median(vector<float>& vals);
 template int median(vector<int>& vals);
 template double median(vector<double>& vals);
 
+template float threshold(float val, float thresh);
+template int threshold(int val, int thresh);
+template double threshold(double val, double thresh);
 
 

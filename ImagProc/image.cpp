@@ -203,6 +203,11 @@ Image operator*(float c, const Image& img)
 	return out;
 }
 
+bool Image::in_range(int x, int y) const
+{
+	return x >= 0 && x < _width&& y >= 0 && y < _height; 
+}
+
 Image Image::copy() const 
 {
 	return Image(pixels);
@@ -547,8 +552,21 @@ Image Image::normalize() const
 	float scale = 255.0f / max;
 
 	return scale * (*this);
+}
 
+Image Image::invert() const
+{
+	Image out(_width, _height);
 
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			out[i][j] = pixels[i][j].invert();
+		}
+	}
+
+	return out;
 }
 
 Image Image::sharpen(float alpha) const
@@ -729,4 +747,81 @@ Image Image::binarize(float threshold) const
 	}
 	
 	return out;
+}
+
+int Image::count_ones(int x, int y, int radius) const
+{
+	int count = 0;
+	for (int i = -radius; i <= radius; i++)
+	{
+		for (int j = -radius; j <= radius; j++)
+		{
+			if (in_range(x+i, y+j) && pixels[x + i][y + j].r >= 254.0f) //this should work well enough for binary images
+			{
+				count++;
+			}
+		}
+	}
+
+	return count;
+}
+
+Image Image::dilate(int radius) const
+{
+	Image out(_width, _height);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			out[i][j] = threshold(count_ones(i, j, radius), 1)* Color{ 255.0f, 255.0f, 255.0f, 0.0f } + Color{0.0f, 0.0f, 0.0f, 255.0f};
+		}
+	}
+
+	return out;
+}
+
+
+Image Image::erode(int radius) const
+{
+	Image out(_width, _height);
+
+	int thresh = (2 * radius + 1) * (2 * radius + 1);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			out[i][j] = threshold(count_ones(i, j, radius), thresh) * Color { 255.0f, 255.0f, 255.0f, 0.0f } + Color{ 0.0f, 0.0f, 0.0f, 255.0f };
+		}
+	}
+
+	return out;
+}
+
+Image Image::majority(int radius) const
+{
+	Image out(_width, _height);
+
+	int thresh = ((2 * radius + 1) * (2 * radius + 1))/2 + 1;
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			out[i][j] = threshold(count_ones(i, j, radius), thresh) * Color { 255.0f, 255.0f, 255.0f, 0.0f } + Color{ 0.0f, 0.0f, 0.0f, 255.0f };
+		}
+	}
+
+	return out;
+}
+
+Image Image::open(int radius) const
+{
+	return erode(radius).dilate(radius);
+}
+
+Image Image::close(int radius) const
+{
+	return dilate(radius).erode(radius);
 }

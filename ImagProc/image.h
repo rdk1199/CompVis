@@ -11,6 +11,7 @@ struct Color
 	float r = 0, g = 0, b = 0, a = 0;
 
 	float sq_mag() { return (r * r + g * g + b * b + a * a)/(255.0f * 255.0f); } //magnitude of RGBA values in 0-1 scale
+	Color invert() const { return { 255.0 - r, 255.0 - g, 255.0 - b, a }; }
 
 };
 
@@ -123,6 +124,7 @@ public:
 	//properties
 	int width() const { return _width; }
 	int height() const { return _height; }
+	bool in_range(int x, int y) const; //return true iff x ,y is in range 
 
 	//accessors
 	Color at(int i, int j) const { return pixels[i][j]; }
@@ -173,6 +175,7 @@ public:
 	//misc operations
 	Image integral() const; //return integral image
 	Image normalize() const; //scale color values so max is 255
+	Image invert() const; //inverts color channels
 
 	//non-linear filters
 	Image sharpen(float alpha = 0.25f) const;
@@ -187,6 +190,18 @@ public:
 
 	//binary image processing 
 	Image binarize(float threshold) const; //turn grayscale images into binary with given threshold (between 0 and 1)
+
+	//helper for BINARY IMAGES
+	int count_ones(int x, int y, int radius) const; //count how many "1" pixels are within [x - radius, x + radius] * [y - radius, y+radius]
+
+	//morphological operators for binary images
+	Image dilate(int radius) const;
+	Image erode(int radius) const;
+	Image majority(int radius) const;
+	Image open(int radius) const;
+	Image close(int radius) const; 
+
+	
 };
 
 Image operator+(const Image& im1, const Image& im2);

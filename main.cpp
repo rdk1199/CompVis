@@ -95,8 +95,8 @@ int main()
 
 	Image bird_iter_bilateral = bird.iter_bilateral(3, 4, 1.0, 1.0);
 	bird_iter_bilateral.save("Images/bird_iter_bilat.png");
+	
 	*/
-
 	Image bird_max_mono = bird.max_monochrome();
 	Image bird_mean_mono = bird.mean_monochrome();
 	Image bird_grayscale = bird.grayscale();
@@ -106,8 +106,28 @@ int main()
 	bird_mean_mono.save("Images/bird_mean_mono.png");
 	bird_grayscale.save("Images/bird_grayscale.png");
 	bird_binarize.save("Images/bird_binary.png");
+
+	Image col_invert = colors.invert();
+	Image bird_invert = bird.invert();
+
+	col_invert.save("Images/colors_inverted.png");
+	bird_invert.save("Images/bird_inverted.png");
 	
 
+	Image bird_dilate = bird_binarize.dilate(4);
+	bird_dilate.save("Images/bird_dilate.png");
+
+	Image bird_erode = bird_binarize.erode(4);
+	bird_erode.save("Images/bird_erode.png");
+
+	Image bird_maj = bird_binarize.majority(4);
+	bird_maj.save("Images/bird_maj.png");
+
+	Image bird_open = bird_binarize.open(4);
+	Image bird_close = bird_binarize.close(4);
+
+	bird_open.save("Images/bird_open.png");
+	bird_close.save("Images/bird_close.png");
 
 	return 0;
 }
