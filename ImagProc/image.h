@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #include "../Math/linalg.h"
 
@@ -13,6 +14,9 @@ struct Color
 	float sq_mag() { return (r * r + g * g + b * b + a * a)/(255.0f * 255.0f); } //magnitude of RGBA values in 0-1 scale
 	Color invert() const { return { 255.0 - r, 255.0 - g, 255.0 - b, a }; }
 
+	static Color white() { return { 255.0f, 255.0f, 255.0f, 255.0f }; }
+	static Color black() { return { 0.0f, 0.0f, 0.0f, 255.0f}; }
+	static Color gray(float val, float alpha = 255.0f) { return { val, val, val, alpha }; } //make grayscale color with given value and alpha
 };
 
 
@@ -192,6 +196,7 @@ public:
 	Image binarize(float threshold) const; //turn grayscale images into binary with given threshold (between 0 and 1)
 
 	//helper for BINARY IMAGES
+	bool is_one(int x, int y) const; 
 	int count_ones(int x, int y, int radius) const; //count how many "1" pixels are within [x - radius, x + radius] * [y - radius, y+radius]
 
 	//morphological operators for binary images
@@ -200,6 +205,9 @@ public:
 	Image majority(int radius) const;
 	Image open(int radius) const;
 	Image close(int radius) const; 
+
+	//distance transforms
+	Image manhattan_dist_trans() const;
 
 	
 };

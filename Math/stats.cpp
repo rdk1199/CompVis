@@ -23,14 +23,14 @@ T median(vector<T>& vals)
 template<class T>
 T mean(const vector<T>& vals)
 {
-	T sum;
+	T sum = 0;
 
 	for (int i = 0; i < vals.size(); i++)
 	{
 		sum = sum + vals[i];
 	}
 
-	return sum / vals.size();
+	return sum / static_cast<float>(vals.size());
 
 }
 

@@ -97,8 +97,10 @@ int main()
 	bird_iter_bilateral.save("Images/bird_iter_bilat.png");
 	
 	*/
-	Image bird_max_mono = bird.max_monochrome();
-	Image bird_mean_mono = bird.mean_monochrome();
+
+	
+	Image bird_max_mono = bird.max_monochrome();	
+	Image bird_mean_mono = bird.mean_monochrome();	
 	Image bird_grayscale = bird.grayscale();
 	Image bird_binarize = bird_grayscale.binarize(0.5f);
 
@@ -128,6 +130,12 @@ int main()
 
 	bird_open.save("Images/bird_open.png");
 	bird_close.save("Images/bird_close.png");
+
+	Image bird_dist = bird_binarize.manhattan_dist_trans();
+	bird_dist.save("Images/bird_dist.png");
+
+
+
 
 	return 0;
 }

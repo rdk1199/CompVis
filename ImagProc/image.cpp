@@ -710,9 +710,10 @@ Image Image::mean_monochrome() const
 		for (int j = 0; j < _height; j++)
 		{
 			float avg = mean(vector<float>({ pixels[i][j].r, pixels[i][j].g, pixels[i][j].b }));
-			out[i][j] = { avg, avg, avg, pixels[i][j].a };
+			out[i][j] = Color::gray(avg, pixels[i][j].a);
 		}
 	}
+
 
 	return out;
 }
@@ -749,6 +750,11 @@ Image Image::binarize(float threshold) const
 	return out;
 }
 
+bool Image::is_one(int x, int y) const
+{
+	return in_range(x, y) && pixels[x][y].r >= 254.0f;
+}
+
 int Image::count_ones(int x, int y, int radius) const
 {
 	int count = 0;
@@ -756,7 +762,7 @@ int Image::count_ones(int x, int y, int radius) const
 	{
 		for (int j = -radius; j <= radius; j++)
 		{
-			if (in_range(x+i, y+j) && pixels[x + i][y + j].r >= 254.0f) //this should work well enough for binary images
+			if (is_one(x+i, y+j)) //this should work well enough for binary images
 			{
 				count++;
 			}
@@ -824,4 +830,66 @@ Image Image::open(int radius) const
 Image Image::close(int radius) const
 {
 	return dilate(radius).erode(radius);
+}
+
+Image Image::manhattan_dist_trans() const //two-pass algorithm described in Szeliski (pg. 112)
+{
+	float large = 2 * (_width + _height); //max distance would be _width + _height (or something like that) so this value is only place holder and will not appear in final image
+
+	Image out(_width, _height);
+
+	//forward pass -> only look down and to the left
+
+	out[0][0] = is_one(0, 0) ? Color::gray(large) : Color::black(); //bottom left corner
+
+	for (int i = 1; i < _width; i++) //bottom row
+	{
+		out[i][0] = is_one(i, 0) ? Color::gray(1 + std::min(large, out[i-1][0].r) ) : Color::black();
+	}
+
+	for (int j = 1; j < _height; j++) //left column // this is OK to do now
+	{
+		out[0][j] = is_one(0, j)  ? Color::gray(1 + std::min(large, out[0][j - 1].r))  :  Color::black();
+	}
+
+	for (int i = 1; i < _width; i++) //now do the rest of the grid
+	{
+		for (int j = 1; j < _height; j++)
+		{
+			if (is_one(i, j))
+			{
+				out[i][j] = Color::gray(1 + std::min(out[i - 1][j].r, out[i][j - 1].r));
+			}
+
+			else
+			{
+				out[i][j] = Color::black();
+			}
+		}
+	}
+
+	//backward pass //now only look up and to the right
+
+	//don't have to change top right corner
+
+	for (int i = _width - 2; i >= 0; i--) //top row
+	{
+		out[i][_height - 1] = Color::gray(std::min(out[i][_height-1].r, 1 + out[i+1][_height-1].r));
+	}
+
+	for (int j = _height - 2; j >= 0; j--) //right column
+	{
+		out[_width - 1][j] = Color::gray(std::min(out[_width - 1][j].r, 1 + out[_width - 1][j + 1].r));
+	}
+
+
+	for (int i = _width - 2; i >= 0; i--) //now the rest
+	{
+		for (int j = _height - 2; j >= 0; j--)
+		{
+			out[i][j] = Color::gray(std::min({out[i][j].r, 1 + out[i + 1][j].r, 1 + out[i][j + 1].r}));
+		}
+	}
+
+	return out;
 }
