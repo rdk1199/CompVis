@@ -229,6 +229,16 @@ Image Image::blend(const Image& im1, const Image& im2, float alpha)
 	return alpha * im1 + (1.0f - alpha) * im2;
 }
 
+void Image::abs()
+{
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			pixels[i][j] = pixels[i][j].abs();
+		}
+	}
+}
 
 Image Image::const_pad(int k, Color col) const
 {
@@ -922,8 +932,41 @@ Image Image::bicubic_interpolate(int rate, float a) const
 			{
 				for (int l = y_lo - 3; l <= y_lo + 3; l++)
 				{
-					col += clamp_at(k, l) * bicubic_spline_2d(static_cast<float>(i - rate * k)/rate, static_cast<float>(j - rate * l)/rate, a);
+					col += clamp_at(k, l) * bicubic_spline_2d(static_cast<float>(i) / rate - k, static_cast<float>(j) / rate - l, a);
 
+				}
+			}
+
+			out[i][j] = col;
+
+		}
+	}
+
+	return out;
+}
+
+
+Image Image::bicubic_decimate(int rate, float a) const
+{
+	Image out(_width / rate, _height / rate);
+
+	for (int i = 0; i < _width / rate; i++)
+	{
+		for (int j = 0; j < _height / rate; j++)
+		{
+
+			int x_lo = rate * (i - 2);
+			int x_hi = rate * (i + 2);
+			int y_lo = rate * (j - 2);
+			int y_hi = rate * (j + 2);
+
+			Color col = Color::black();
+
+			for (int k = x_lo; k <= x_hi; k++)
+			{
+				for (int l = y_lo; l <= y_hi; l++)
+				{
+					col += (1.0f/(rate * rate)) * clamp_at(k, l) * bicubic_spline_2d(i - static_cast<float>(k) / rate, j - static_cast<float>(l)/rate, a);
 				}
 			}
 

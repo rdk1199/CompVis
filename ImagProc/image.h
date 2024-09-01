@@ -13,6 +13,7 @@ struct Color
 
 	float sq_mag() { return (r * r + g * g + b * b + a * a)/(255.0f * 255.0f); } //magnitude of RGBA values in 0-1 scale
 	Color invert() const { return { 255.0 - r, 255.0 - g, 255.0 - b, a }; }
+	Color abs() const { return { std::abs(r), std::abs(g), std::abs(b), std::abs(a) }; }
 
 	static Color white() { return { 255.0f, 255.0f, 255.0f, 255.0f }; }
 	static Color black() { return { 0.0f, 0.0f, 0.0f, 255.0f}; }
@@ -141,6 +142,7 @@ public:
 	void bias(float val);
 	void bias(Color val);
 	void gamma_correct(float gamma);
+	void abs(); //takes absolute value of every color (in case some color values are negative) -> mainly for measuring relative difference between two images
 
 
 
@@ -155,15 +157,16 @@ public:
 	*/
 
 	static Image blend(const Image& im1, const Image& im2, float alpha);
-
-
+	
 	//image stats
 	std::vector<ImgHistEntry> histogram() const;
 	std::vector<ImgHistEntry> cum_dist() const; //normalized cumulative distribution function
 
+
+
 	//filter
 	Image copy() const; //returns identical copy
-	
+
 	Image hist_equalize() const; //histogram equalization
 	Image lin_filter(const Matrix<float>& filter) const; //clamp pads image, then applies linear filter - filter must be square matrix of odd size
 	
@@ -212,12 +215,13 @@ public:
 
 	//scaling
 	Image bicubic_interpolate(int rate, float a = -1.0f) const; //scale up image by factor of rate (bicubic interpolation)
-	Image decimate(int rate) const; //scale down image by factor of rate
+	Image bicubic_decimate(int rate, float a = -1.0f) const; //scale down image by factor of rate
 };
 
 Image operator+(const Image& im1, const Image& im2);
 Image operator-(const Image& im1, const Image& im2);
 Image operator*(float c, const Image& img);
+
 
 
 inline Image operator*(const Matrix<float>& filter, const Image& img) //convolve filter with image
