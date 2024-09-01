@@ -133,7 +133,7 @@ public:
 	//accessors
 	Color at(int i, int j) const { return pixels[i][j]; }
 	std::vector<Color>& operator[](int i) { return pixels[i]; }
-
+	Color clamp_at(int i, int j) const; //returns pixel value if (i,j) is in range, else returns the clamped value (i.e. the same as if the image were clamp padded)
 
 	//point processes
 	void gain(float val);
@@ -149,7 +149,7 @@ public:
 	Image clamp_pad(int k) const; //adds clamp padding of width k
 
 	/*
-	//pad uniformly until image is desired size (keep original image centered)
+	//pad uniformly until image is desired size (keep original image centered) <- maybe implement this later if needed
 	Image const_pad_to_size(int width, int height, Color col = { 0,0,0,0 }) const; 
 	Image clamp_pad_to_size(int width, int height) const;
 	*/
@@ -208,8 +208,11 @@ public:
 
 	//distance transforms
 	Image manhattan_dist_trans() const;
+	//
 
-	
+	//scaling
+	Image bicubic_interpolate(int rate, float a = -1.0f) const; //scale up image by factor of rate (bicubic interpolation)
+	Image decimate(int rate) const; //scale down image by factor of rate
 };
 
 Image operator+(const Image& im1, const Image& im2);

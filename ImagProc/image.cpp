@@ -9,6 +9,7 @@ using std::vector;
 
 #include "image.h"
 #include "../Math/stats.h"
+#include "../Math/functions.h"
 
 Color col_median(std::vector<Color> colors)
 {
@@ -90,6 +91,14 @@ Image::Image(int width, int height, Color col) :
 	_height(height),
 	pixels(vector<vector<Color>>(width, vector<Color>(height, col)))
 {}
+
+Color Image::clamp_at(int i, int j) const
+{
+	int clamp_i = std::clamp(i, 0, _width - 1);
+	int clamp_j = std::clamp(j, 0, _height - 1);
+
+	return pixels[clamp_i][clamp_j];
+}
 
 void Image::gain(float val)
 {
@@ -888,6 +897,38 @@ Image Image::manhattan_dist_trans() const //two-pass algorithm described in Szel
 		for (int j = _height - 2; j >= 0; j--)
 		{
 			out[i][j] = Color::gray(std::min({out[i][j].r, 1 + out[i + 1][j].r, 1 + out[i][j + 1].r}));
+		}
+	}
+
+	return out;
+}
+
+Image Image::bicubic_interpolate(int rate, float a) const
+{
+	Image out(rate * _width, rate * _height);
+
+
+	for (int i = 0; i < rate * _width; i++)
+	{
+		for (int j = 0; j < rate * _height; j++)
+		{
+
+			int x_lo = i / rate; 
+			int y_lo = j / rate;
+
+			Color col = Color::black();
+
+			for (int k = x_lo - 3; k <= x_lo + 3; k++)
+			{
+				for (int l = y_lo - 3; l <= y_lo + 3; l++)
+				{
+					col += clamp_at(k, l) * bicubic_spline_2d(static_cast<float>(i - rate * k)/rate, static_cast<float>(j - rate * l)/rate, a);
+
+				}
+			}
+
+			out[i][j] = col;
+
 		}
 	}
 

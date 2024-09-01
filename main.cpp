@@ -96,7 +96,7 @@ int main()
 	Image bird_iter_bilateral = bird.iter_bilateral(3, 4, 1.0, 1.0);
 	bird_iter_bilateral.save("Images/bird_iter_bilat.png");
 	
-	*/
+	
 
 	
 	Image bird_max_mono = bird.max_monochrome();	
@@ -132,8 +132,10 @@ int main()
 	bird_close.save("Images/bird_close.png");
 
 	Image bird_dist = bird_binarize.manhattan_dist_trans();
-	bird_dist.save("Images/bird_dist.png");
+	bird_dist.save("Images/bird_dist.png");*/
 
+	Image bird_upscale = bird.bicubic_interpolate(2);
+	bird_upscale.save("Images/bird_upscale.png");
 
 
 
