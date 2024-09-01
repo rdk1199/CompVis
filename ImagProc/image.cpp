@@ -913,7 +913,7 @@ Image Image::manhattan_dist_trans() const //two-pass algorithm described in Szel
 	return out;
 }
 
-Image Image::bicubic_interpolate(int rate, float a) const
+Image Image::bicubic_upscale(int rate, float a) const
 {
 	Image out(rate * _width, rate * _height);
 
@@ -926,7 +926,7 @@ Image Image::bicubic_interpolate(int rate, float a) const
 			int x_lo = i / rate; 
 			int y_lo = j / rate;
 
-			Color col = Color::black();
+			Color col;
 
 			for (int k = x_lo - 3; k <= x_lo + 3; k++)
 			{
@@ -955,12 +955,13 @@ Image Image::bicubic_decimate(int rate, float a) const
 		for (int j = 0; j < _height / rate; j++)
 		{
 
+			//bicubic kernel is only nonzero in this range
 			int x_lo = rate * (i - 2);
 			int x_hi = rate * (i + 2);
 			int y_lo = rate * (j - 2);
 			int y_hi = rate * (j + 2);
 
-			Color col = Color::black();
+			Color col;
 
 			for (int k = x_lo; k <= x_hi; k++)
 			{

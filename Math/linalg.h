@@ -48,17 +48,17 @@ template<class T>
 class Matrix
 {
 private:
-	std::vector<std::vector<T>>matrix;
+	std::vector<std::vector<T>>m;
 
 public: 
-	std::vector<T>& operator[](int i) { return matrix[i]; }
-	std::vector<T> at(int i) const {  return matrix[i];	}; //get i'th row
-	T at(int i, int j) const { return matrix[i][j]; };
+	std::vector<T>& operator[](int i) { return m[i]; }
+	std::vector<T> at(int i) const {  return m[i];	}; //get i'th row
+	T at(int i, int j) const { return m[i][j]; };
 
-	int n_rows() const { return matrix.size(); }
-	int n_cols() const { return matrix.size()? matrix[0].size() : 0; }
+	int n_rows() const { return m.size(); }
+	int n_cols() const { return m.size()? m[0].size() : 0; }
 
-	bool is_square() const { return matrix.size() ? matrix.size() == matrix[0].size() : true; }
+	bool is_square() const { return m.size() ? m.size() == m[0].size() : true; }
 
 	static Matrix<T> identity(int n); //n by n identity matrix
 
@@ -66,6 +66,15 @@ public:
 	Matrix<T>(const std::vector<std::vector<T>>& entries); //construct matrix from values 
 
 	Matrix<T> transpose() const;
+
+	Matrix<T> quick_inv_3() const; //quickly invert a 3x3 matrix -> will not function on other sizes
+
+
+	//2D transformations (homogeneous coordinates, so return 3x3 matrix)
+	static Matrix<float> translate_2d(float dx, float dy);
+	static Matrix<float> rotate_2d(float angle); //angle in degrees
+	static Matrix<float> scale_2d(float sx, float sy);
+
 
 };
 

@@ -214,8 +214,17 @@ public:
 	//
 
 	//scaling
-	Image bicubic_interpolate(int rate, float a = -1.0f) const; //scale up image by factor of rate (bicubic interpolation)
+	Image bicubic_upscale(int rate, float a = -1.0f) const; //scale up image by factor of rate (bicubic interpolation)
 	Image bicubic_decimate(int rate, float a = -1.0f) const; //scale down image by factor of rate
+
+
+	//transformations (inverse warping)
+	Image translate(float dx, float dy) const;
+	Image rotate(float angle) const;
+	Image scale(float sx, float sy) const;
+	Image affine_transform(const Matrix<float>& trans) const;
+
+
 };
 
 Image operator+(const Image& im1, const Image& im2);

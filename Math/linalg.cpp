@@ -91,7 +91,7 @@ inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& v)
 
 template<class T>
 Matrix<T>::Matrix(int rows, int columns) :
-	matrix({})
+	m({})
 {
 	if (rows < 0 || columns < 0)
 	{
@@ -100,21 +100,21 @@ Matrix<T>::Matrix(int rows, int columns) :
 
 	}
 
-	matrix.resize(rows);
+	m.resize(rows);
 
 	for (int i = 0; i < rows; i++)
 	{
-		matrix[i].resize(columns);
+		m[i].resize(columns);
 	}
 }
 
 template<class T>
 Matrix<T>::Matrix(const vector<vector<T>>& entries) :
-	matrix(entries)
+	m(entries)
 {
-	for (int i = 1; i < matrix.size(); i++)
+	for (int i = 1; i < m.size(); i++)
 	{
-		if (matrix[i].size() != matrix[0].size())
+		if (m[i].size() != m[0].size())
 		{
 			cout << "cannot create matrix with different sized rows" << endl;
 			throw IllegalMatrixConstruction();
@@ -126,19 +126,74 @@ Matrix<T>::Matrix(const vector<vector<T>>& entries) :
 template<class T>
 Matrix<T> Matrix<T>::transpose() const
 {
-	Matrix<T> transpose(matrix[0].size(), matrix.size());
+	Matrix<T> transpose(m[0].size(), m.size());
 
-	for (int i = 0; i < matrix[0].size(); i++)
+	for (int i = 0; i < m[0].size(); i++)
 	{
-		for (int j = 0; j < matrix.size(); j++)
+		for (int j = 0; j < m.size(); j++)
 		{
-			transpose[i][j] = matrix[j][i];
+			transpose[i][j] = m[j][i];
 		}
 	}
 
 	return transpose;
 }
 
+template<class T>
+Matrix<T> Matrix<T>::identity(int n)
+{
+	Matrix<T> id(n, n);
+	
+	for (int i = 0; i < n; i++)
+	{
+		id[i][i] = 1;
+	}
+
+	return id;
+}
+
+template<class T>
+Matrix<T> Matrix<T>::quick_inv_3() const
+{
+	if (n_rows() != 3 || n_cols() != 3)
+	{
+		cout << "cannot apply quick 3x3 inverse to non 3x3 matrix" << endl;
+		exit(1);
+	}
+
+	T a = m[0][0];
+	T b = m[0][1];
+	T c = m[0][2];
+	T d = m[1][0];
+	T e = m[1][1];
+	T f = m[1][2];
+	T g = m[2][0];
+	T h = m[2][1];
+	T i = m[2][2];
+	
+	T A  = e*i - f*h;
+	T B =  -(d*i - f * g);
+	T C  = d*h - e*g;
+	T D  = -(b * i - c * h);
+	T E  = a*i - c * g;
+	T F  = -(a*h - b*g);
+	T G  = b*f - c*e;
+	T H  =-(a*f - c *d);
+	T I  = a*e - b*d;
+	
+	T det_A = a * A + b * B + c * C;
+
+	if (det_A == 0) //return the zero matrix if non-invertible
+	{
+		return Matrix<T>(3, 3);
+	}
+	
+	return (1.0f / det_A) * Matrix<T>({
+		{A, D, G},
+		{B, E, H},
+		{C, F, I}});
+
+}
 
 template<class T>
 Matrix<T> operator+(const Matrix<T>& A, const Matrix<T>& B)
@@ -260,6 +315,47 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix)
 	}
 
 	return os;
+}
+
+template<class T>
+Matrix<float> Matrix<T>::translate_2d(float dx, float dy)
+{
+	Matrix<float> out = Matrix<float>::identity(3);
+
+	out[0][2] = dx;
+	out[1][2] = dy;
+
+	return out;
+}
+
+template<class T>
+Matrix<float> Matrix<T>::rotate_2d(float angle)
+{
+	angle *= DEG2RAD; //convert to radians
+
+	float cos = std::cos(angle);
+	float sin = std::sin(angle);
+
+	Matrix<float> out(3, 3);
+
+	out[0][0] = cos;
+	out[0][1] = -sin;
+	out[1][0] = sin;
+	out[1][1] = cos;
+	out[2][2] = 1;
+
+	return out;
+}
+
+template<class T>
+Matrix<float> Matrix<T>::scale_2d(float sx, float sy)
+{
+	Matrix<float> out = Matrix<float>::identity(3);
+
+	out[0][0] = sx;
+	out[1][1] = sy;
+
+	return out;
 }
 
 //vector operations

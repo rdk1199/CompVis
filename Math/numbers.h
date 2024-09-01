@@ -3,6 +3,12 @@
 #include <cmath>
 #include <iostream>
 
+
+#define PI 3.1415926535897
+#define DEG2RAD (PI/180.0)
+#define RAD2DEG (180.0/PI)
+
+
 struct complex
 {
 	float re = 0.0f;
@@ -47,6 +53,11 @@ inline complex operator+=(complex& a, const complex& b)
 inline complex operator-(const complex& a, const complex& b)
 {
 	return { a.re - b.re, a.im - b.im };
+}
+
+inline complex operator-(const complex& a)
+{
+	return { -a.re, -a.im };
 }
 
 inline complex operator-=(complex& a, const complex& b)
