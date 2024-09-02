@@ -43,7 +43,7 @@ Image::Image(std::string file)
 		for (int j = 0; j < _height; j++)
 		{
 			png::rgba_pixel px = img[j][i];
-			pixels[i][j] = { px.red, px.green, px.blue, px.alpha };
+			pixels[i][_height - 1 - j] = { px.red, px.green, px.blue, px.alpha };
 		}
 
 	}
@@ -72,7 +72,7 @@ void Image::save(std::string file)
 
 
 
-			out_img[j][i] = png::rgba_pixel(r,g,b,a);
+			out_img[_height - 1 - j][i] = png::rgba_pixel(r,g,b,a);
 		}
 	}
 
@@ -913,6 +913,33 @@ Image Image::manhattan_dist_trans() const //two-pass algorithm described in Szel
 	return out;
 }
 
+Color Image::bicubic_interp(float x, float y, float a) const
+{
+	//truncate coords
+	int x_trunc = static_cast<int>(x); 
+	int y_trunc = static_cast<int>(y);
+
+	//bicubic spline is zero outside of this range
+	int x_lo = x_trunc - 2;
+	int x_hi = x_trunc + 2;
+	
+	int y_lo = y_trunc - 2;
+	int y_hi = y_trunc + 2;
+
+
+	Color out;
+
+	for (int i = x_lo; i <= x_hi; i++)
+	{
+		for (int j = y_lo; j <= y_hi; j++)
+		{
+			out += bicubic_spline_2d(x - i, y - j, a) * clamp_at(i, j);
+		}
+	}
+
+	return out;
+}
+
 Image Image::bicubic_upscale(int rate, float a) const
 {
 	Image out(rate * _width, rate * _height);
@@ -977,4 +1004,70 @@ Image Image::bicubic_decimate(int rate, float a) const
 	}
 
 	return out;
+}
+
+Image Image::affine_transform(const Matrix<float>& trans) const //implement inverse warping
+{
+	if (trans.n_rows() != 3 || trans.n_cols() != 3)
+	{
+		cout << "affine transform matrices should be 3x3; input is " << trans.n_rows() << " x " << trans.n_cols() << ".\n";
+		exit(1);
+	}
+
+	
+	Matrix<float> inv_trans = trans.quick_inv_3();
+
+	Image out(_width, _height);
+
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			vector<float> coord = { i, j ,1.0f };
+			vector<float> trans_coord = inv_trans * coord;
+
+
+			if (trans_coord[2] == 0.0f)
+			{
+				cout << "ERROR: Image::affine_transform: homogeneous coordinate error: transformation matrix: \n" << trans << " \n (i,j): " << i << ", " << j << endl;
+				exit(1);
+			}
+
+			trans_coord = (1.0f / trans_coord[2]) * trans_coord; //normalize homogeneous coordinate
+
+
+			out[i][j] = bicubic_interp(trans_coord[0], trans_coord[1]);
+
+
+		}
+	}
+
+	return out;
+}
+
+Image Image::translate(float dx, float dy) const
+{
+	Matrix<float> trans = Matrix<float>::translate_2d(dx, dy);
+	return affine_transform(trans);
+}
+
+Image Image::rotate(float angle) const
+{
+	Matrix<float> move = Matrix<float>::translate_2d(-_width / 2, -_height / 2);
+	Matrix<float> rot = Matrix<float>::rotate_2d(angle);
+	Matrix<float> move_back = Matrix<float>::translate_2d(_width / 2, _height / 2);
+
+	Matrix<float> trans = move_back * rot * move;
+	return affine_transform(trans);
+}
+
+Image Image::scale(float sx, float sy) const
+{
+	Matrix<float> move = Matrix<float>::translate_2d(-_width / 2, -_height / 2);
+	Matrix<float> rot = Matrix<float>::scale_2d(sx, sy);
+	Matrix<float> move_back = Matrix<float>::translate_2d(_width / 2, _height / 2);
+
+	Matrix<float> trans = move_back * rot * move;
+
+	return affine_transform(trans);
 }

@@ -26,7 +26,15 @@ template<class S, class T>
 std::vector<T> operator*(const S& c, const std::vector<T>& v); //scalar multiplication
 
 template<class T>
-inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& v);
+inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& v)
+{
+	for (int i = 0; i < v.size(); i++)
+	{
+		stream << v[i] << " ";
+	}
+
+	return stream;
+}
 
 class IllegalMatrixConstruction : public std::exception
 {

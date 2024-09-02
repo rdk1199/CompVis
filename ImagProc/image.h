@@ -213,16 +213,20 @@ public:
 	Image manhattan_dist_trans() const;
 	//
 
+	//interpolation
+	Color bicubic_interp(float x, float y, float a = -1.0f) const;
+
 	//scaling
 	Image bicubic_upscale(int rate, float a = -1.0f) const; //scale up image by factor of rate (bicubic interpolation)
 	Image bicubic_decimate(int rate, float a = -1.0f) const; //scale down image by factor of rate
 
 
 	//transformations (inverse warping)
+	Image affine_transform(const Matrix<float>& trans) const; //3 x 3 affine transform matrix (hom. coordinates) - implement inverse warping with bicubic interp
 	Image translate(float dx, float dy) const;
-	Image rotate(float angle) const;
-	Image scale(float sx, float sy) const;
-	Image affine_transform(const Matrix<float>& trans) const;
+	Image rotate(float angle) const; //rotates around CENTER of image
+	Image scale(float sx, float sy) const; //places origin at CENTER of image for scaling
+	
 
 
 };

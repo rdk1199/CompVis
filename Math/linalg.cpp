@@ -78,18 +78,6 @@ std::vector<T> operator*(const S& c, const std::vector<T>& v)
 }
 
 template<class T>
-inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& v)
-{
-	for (int i = 0; i < v.size(); i++)
-	{
-		stream << v[i] << " ";
-	}
-
-	return stream;
-}
-
-
-template<class T>
 Matrix<T>::Matrix(int rows, int columns) :
 	m({})
 {

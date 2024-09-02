@@ -134,18 +134,27 @@ int main()
 	Image bird_dist = bird_binarize.manhattan_dist_trans();
 	bird_dist.save("Images/bird_dist.png");*/
 
-	Image bird_upscale = bird.bicubic_upscale(3);
-	bird_upscale.save("Images/bird_upscale.png");
+	//Image bird_upscale = bird.bicubic_upscale(3);
+	//bird_upscale.save("Images/bird_upscale.png");
 
-	Image bird_downscale = bird.bicubic_decimate(3, -0.5);
-	bird_downscale.save("Images/bird_downscale.png");
+	//Image bird_downscale = bird.bicubic_decimate(3, -0.5);
+	//bird_downscale.save("Images/bird_downscale.png");
 
-	Image bird_scaled = bird_upscale.bicubic_decimate(3);
-	bird_scaled.save("Images/bird_scaled.png");
+	//Image bird_scaled = bird_upscale.bicubic_decimate(3);
+	//bird_scaled.save("Images/bird_scaled.png");
 
 	//Image bird_scale_diff = bird - bird_scaled;
 	//bird_scale_diff.abs();
 	//bird_scale_diff.save("Images/bird_scale_diff.png");
+
+	//Image bird_trans = bird.translate(12, 12);
+//	bird_trans.save("Images/bird_translate.png");
+
+	Image bird_rot_45 = bird.rotate(45);
+	bird_rot_45.save("Images/bird_rot_45.png");
+
+	Image bird_scale = bird.scale(0.5, 2.0f);
+	bird_scale.save("Images/bird_scale.png");
 
 	return 0;
 }
