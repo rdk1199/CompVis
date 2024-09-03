@@ -2,7 +2,6 @@
 
 #include <vector>
 
-
 #include "numbers.h"
 
 class IllegalVectorOp : public std::exception
@@ -52,15 +51,20 @@ class IllegalMatrixOp : public std::exception
 	}
 };
 
+//inline float abs(float f) { return std::abs(f); }
+//inline double abs(double d) { return std::abs(d); }
+inline float abs(complex c) { return c.modulus(); }
+
 template<class T>
 class Matrix
 {
 private:
 	std::vector<std::vector<T>>m;
 
+
+	
 public: 
-	std::vector<T>& operator[](int i) { return m[i]; }
-	std::vector<T> at(int i) const {  return m[i];	}; //get i'th row
+	std::vector<T>& operator[](int i) { return m[i]; }  //get i'th row
 	T at(int i, int j) const { return m[i][j]; };
 
 	int n_rows() const { return m.size(); }
@@ -76,9 +80,24 @@ public:
 	Matrix<T> transpose() const;
 
 	Matrix<T> quick_inv_3() const; //quickly invert a 3x3 matrix -> will not function on other sizes
+	
+	Matrix<T> submatrix(int r1, int r2, int c1, int c2) const; //submatrix of entries in rows r1 ... r2 and cols c1 ... c2
 
+	//elementary row operations - for efficiency, these don't do bounds checking - careful!
+	void swap_rows(int r1, int r2); 
+	void multiply_row(int row, T val);
+	void add_multiple_of_row(int r_dest, int r_src, T mult); //r_dest += mult * r_src
 
-	//2D transformations (homogeneous coordinates, so return 3x3 matrix)
+	//inversion/Gaussian elimination stuff
+	Matrix<T> row_ech(T* det = nullptr) const; //row_ech computes determinant on the fly and places it in det if det is non-null and matrix is square
+	Matrix<T> red_row_ech(T* det = nullptr) const;
+
+	//square matrices only
+	T det() const; //does row_ech purely to determine determinant
+	Matrix<T> id_augment() const; //augment a square matrix with the identity
+	Matrix<T> inverse() const;
+
+	//2D transformation matrices (homogeneous coordinates, so return 3x3 matrix)
 	static Matrix<float> translate_2d(float dx, float dy);
 	static Matrix<float> rotate_2d(float angle); //angle in degrees
 	static Matrix<float> scale_2d(float sx, float sy);

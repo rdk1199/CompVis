@@ -141,7 +141,210 @@ Matrix<T> Matrix<T>::identity(int n)
 }
 
 template<class T>
-Matrix<T> Matrix<T>::quick_inv_3() const
+Matrix<T> Matrix<T>::submatrix(int r1, int r2, int c1, int c2) const
+{
+	
+	Matrix<T> out(r2 - r1 + 1, c2 - c1 + 1);
+
+	for (int i = r1; i <= r2; i++)
+	{
+		for (int j = c1; j <= c2; j++)
+		{
+			out[i - r1][j - c1] = m[i][j];
+		}
+	}
+
+	return out;
+}
+
+template<class T>
+Matrix<T> Matrix<T>::id_augment() const
+{
+	if (!is_square())
+	{
+		cout << "cannot id_augment non-square matrix" << endl;
+		exit(1);
+	}
+
+	Matrix<T> out(n_rows(), 2 * n_cols());
+
+	for (int i = 0; i < n_rows(); i++)
+	{
+		for (int j = 0; j < n_cols(); j++)
+		{
+			out[i][j] = m[i][j];
+		 
+		}
+
+		out[i][n_rows() + i] = 1;
+	}
+	
+	return out;
+}
+
+template<class T> //wikipedia implementation
+Matrix<T> Matrix<T>::row_ech(T* det) const
+{
+	Matrix<T> out = *this;
+
+	int r = 0;
+	int c = 0;
+
+	T det_scale = 1;
+
+	while (r < n_rows() && c < n_cols())
+	{
+		int i_max = r;
+
+		for (int i = r+1; i < n_rows(); i++)
+		{
+			if (abs(out[i][c]) > abs(out[i_max][c])) //find the largest possible pivot in the column
+			{
+				i_max = i;
+			}
+		}
+
+		if (out[i_max][c] == 0) //no viable pivot in this column
+		{
+			c++;
+			continue;
+		}
+
+		out.swap_rows(r, i_max);
+
+		if (r != i_max)
+		{
+			det_scale = -det_scale;
+		}
+
+
+		for (int i = r+1; i < n_rows(); i++)
+		{
+			T scale = out[i][c] / out[r][c];
+			out.add_multiple_of_row(i, r, -scale);
+			out[i][c] = 0; //just make sure these are exactly zero
+		}
+
+		r++;
+		c++;
+	}
+
+	
+
+	if (is_square() && det != nullptr)
+	{
+		T diag_product = 1;
+		for (int i = 0; i < n_rows(); i++)
+		{
+			diag_product *= out[i][i];
+		}
+
+		*det = det_scale * diag_product; //current determinant times scaling factor determined by row operations
+	}
+
+	return out;
+}
+
+template<class T>
+Matrix<T> Matrix<T>::red_row_ech(T* det) const
+{
+	Matrix<T> out = *this;
+
+	int r = 0;
+	int c = 0;
+
+	T det_scale = 1;
+
+	while (r < n_rows() && c < n_cols())
+	{
+		int i_max = r;
+
+		for (int i = r + 1; i < n_rows(); i++)
+		{
+			if (abs(out[i][c]) > abs(out[i_max][c])) //find the largest possible pivot in the column
+			{
+				i_max = i;
+			}
+		}
+
+		if (out[i_max][c] == 0) //no viable pivot in this column
+		{
+			c++;
+			continue;
+		}
+
+		out.swap_rows(r, i_max);
+
+		if (r != i_max)
+		{
+			det_scale = -det_scale;
+		}
+		
+
+		
+		out.multiply_row(r, 1.0f / out[r][c]);
+		det_scale = det_scale * out[r][c];
+		out[r][c] = 1.0f; //make sure this is exactly 1
+
+
+		for (int i = 0; i < r; i++)
+		{
+			T scale = -out[i][c];
+			out.add_multiple_of_row(i, r, scale);
+			out[i][c] = 0; //just make sure these are exactly zero
+		}
+
+		for (int i = r+1; i < n_rows(); i++) //just split up the for loop so we don't have to check every time
+		{
+			T scale = -out[i][c];
+			out.add_multiple_of_row(i, r, scale);
+			out[i][c] = 0; //just make sure these are exactly zero
+		}
+
+		r++;
+		c++;
+	}
+
+
+
+	if (is_square() && det != nullptr)
+	{
+		T diag_product = 1;
+		for (int i = 0; i < n_rows(); i++)
+		{
+			diag_product *= out[i][i];
+		}
+
+		*det = det_scale * diag_product; //current determinant times scaling factor determined by row operations
+	}
+
+	return out;
+}
+
+template<class T>
+T Matrix<T>::det() const
+{
+	T det = 0;
+	row_ech(&det);
+	return det;
+}
+
+template<class T>
+Matrix<T> Matrix<T>::inverse() const
+{
+	if (!is_square())
+	{
+		cout << "ERROR: cannot take inverse of non-square matrix" << endl;
+	}
+
+	Matrix aug = id_augment();
+
+	return aug.red_row_ech().submatrix(0, n_rows() -1, n_cols(), 2*n_cols() - 1);
+
+}
+
+template<class T> //hard coded 3x3 matrix inverse
+Matrix<T> Matrix<T>::quick_inv_3() const 
 {
 	if (n_rows() != 3 || n_cols() != 3)
 	{
@@ -304,6 +507,27 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix)
 
 	return os;
 }
+
+template<class T>
+void Matrix<T>::swap_rows(int r1, int r2)
+{
+	vector<T> tmp = m[r1];
+	m[r1] = m[r2];
+	m[r2] = tmp;
+}
+
+template<class T>
+void Matrix<T>::multiply_row(int row, T val)
+{
+	m[row] = val * m[row];
+}
+
+template<class T>
+void Matrix<T>::add_multiple_of_row(int r_dest, int r_src, T mult)
+{
+	m[r_dest] = m[r_dest] + mult * m[r_src];
+}
+
 
 template<class T>
 Matrix<float> Matrix<T>::translate_2d(float dx, float dy)

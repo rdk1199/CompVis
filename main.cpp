@@ -149,12 +149,27 @@ int main()
 
 	//Image bird_trans = bird.translate(12, 12);
 //	bird_trans.save("Images/bird_translate.png");
-
+/*
 	Image bird_rot_45 = bird.rotate(45);
 	bird_rot_45.save("Images/bird_rot_45.png");
 
-	Image bird_scale = bird.scale(0.5, 2.0f);
+	Image bird_scale = bird.scale(0.5, 1.0f);
 	bird_scale.save("Images/bird_scale.png");
+	*/
 
+	Matrix<float> mat({
+
+		{2, -1, 0},
+		{-1, 2, -1},
+		{0, -1, 2}
+		});
+
+
+	//cout << mat.row_ech() << endl;
+	cout << mat.red_row_ech() << endl;
+	cout << mat.id_augment() << endl;
+	cout << mat.id_augment().red_row_ech() << endl;
+	cout << mat.inverse() << endl;
+	cout << mat.det() << endl;
 	return 0;
 }
