@@ -12,6 +12,7 @@ struct Color
 	float r = 0, g = 0, b = 0, a = 0;
 
 	float sq_mag() { return (r * r + g * g + b * b + a * a)/(255.0f * 255.0f); } //magnitude of RGBA values in 0-1 scale
+	float mag() { return std::sqrt(sq_mag()); }
 	Color invert() const { return { 255.0 - r, 255.0 - g, 255.0 - b, a }; }
 	Color abs() const { return { std::abs(r), std::abs(g), std::abs(b), std::abs(a) }; }
 
@@ -89,6 +90,11 @@ inline std::ostream& operator<<(std::ostream& stream, const Color& col)
 }
 
 Color col_median(std::vector<Color> colors);
+
+inline float abs(Color col)
+{
+	return col.mag();
+}
 
 /*
 inline Color operator*=(float b, Color& a)

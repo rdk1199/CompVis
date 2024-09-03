@@ -157,7 +157,7 @@ int main()
 	bird_scale.save("Images/bird_scale.png");
 	*/
 
-	Matrix<float> mat({
+/*	Matrix<float> mat({
 
 		{2, -1, 0},
 		{-1, 2, -1},
@@ -170,6 +170,6 @@ int main()
 	cout << mat.id_augment() << endl;
 	cout << mat.id_augment().red_row_ech() << endl;
 	cout << mat.inverse() << endl;
-	cout << mat.det() << endl;
+	cout << mat.det() << endl;*/
 	return 0;
 }
