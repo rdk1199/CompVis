@@ -2,8 +2,11 @@
 
 #include "Math/numbers.h"
 #include "Math/linalg.h"
+#include "Math/functions.h"
 
 #include "ImagProc/image.h"
+
+#include "ModelFitting/kernel_regression.h"
 
 using std::cout;
 using std::endl;
@@ -171,5 +174,32 @@ int main()
 	cout << mat.id_augment().red_row_ech() << endl;
 	cout << mat.inverse() << endl;
 	cout << mat.det() << endl;*/
+
+
+vector<vector<float>> in = { {0.0, 0.0}, {0.0, 1000.0}, {1000.0, 0.0}, {1000.0, 1000.0} };
+vector<Color> out = { Color::black(), Color::red(), Color::green(), Color::blue() };
+
+ExactKernelRegression<vector<float>, Color> f(in, out, 1000, gaussian_basis);
+
+Image orig(1001, 1001, Color::black());
+orig[0][0] = { 0.0, 0.0, 0.0, 255.0 };
+orig[0][1000] = { 255.0, 0.0, 0.0, 255.0 };
+orig[1000][0] = { 0.0, 255.0, 0.0, 255.0 };
+orig[1000][1000] = { 0.0, 0.0, 255.0, 255.0 };
+
+Image interp(1001, 1001);
+
+for (int i = 0; i < 1001; i++)
+{
+	for (int j = 0; j < 1001; j++)
+	{
+		interp[i][j] = f({ i,j });
+	}
+}
+
+
+orig.save("Images/regression_orig.png");
+interp.save("Images/regression_interp.png");
+
 	return 0;
 }

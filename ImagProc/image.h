@@ -18,6 +18,9 @@ struct Color
 
 	static Color white() { return { 255.0f, 255.0f, 255.0f, 255.0f }; }
 	static Color black() { return { 0.0f, 0.0f, 0.0f, 255.0f}; }
+	static Color red() { return { 255.0f, 0.0f, 0.0, 255.0f }; }
+	static Color green() { return { 0.0f, 255.0f, 0.0, 255.0f }; }
+	static Color blue() { return { 0.0f, 0.0f, 255.0, 255.0f }; }
 	static Color gray(float val, float alpha = 255.0f) { return { val, val, val, alpha }; } //make grayscale color with given value and alpha
 };
 
@@ -60,16 +63,28 @@ inline Color operator*(const Color& a, const Color& b)
 	return { a.r * b.r, a.g * b.g, a.b * b.b, a.a * b.a };
 }
 
+inline Color operator/(const Color& a, const Color& b)
+{
+	return { a.r / b.r, a.g / b.g, a.b / b.b, a.a / b.a };
+}
+
+inline Color operator/(const Color& a, float b)
+{
+	return { a.r / b, a.g / b, a.b / b, a.a / b };
+}
 
 inline Color operator*(float b, const Color& a)
 {
-	return { a.r * b, a.g * b, a.b * b, a.a };
+	return { a.r * b, a.g * b, a.b * b, a.a * b };
 }
 
 inline Color operator*(const Color& a, float b)
 {
-	return { a.r * b, a.g * b, a.b * b, a.a };
+	return { a.r * b, a.g * b, a.b * b, a.a};
 }
+
+
+
 
 inline Color operator*=(Color& a, const Color& b)
 {

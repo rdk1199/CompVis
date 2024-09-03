@@ -9,7 +9,7 @@ class ExactKernelRegression
 private:
 
 	int n_pts; //number of data points being interpolated
-	T (*basis)(T, float);
+	float (*basis)(float, float);
 	float _falloff; //basis function falloff parameter "c"
 
 	//input data points : vectors will have same length -  x in domain_pts[i], f(x) in values[i] 
@@ -20,7 +20,7 @@ private:
 
 public:
 
-	ExactKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float falloff, T(*basis_func)(T, float)); //constructor computes weights based off given data
+	ExactKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float falloff, float(*basis_func)(float, float)); //constructor computes weights based off given data
 	T operator()(const S& x); //evaluates regression function at given input x
 
 };
