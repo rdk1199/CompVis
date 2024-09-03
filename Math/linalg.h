@@ -25,6 +25,13 @@ template<class S, class T>
 std::vector<T> operator*(const S& c, const std::vector<T>& v); //scalar multiplication
 
 template<class T>
+inline float abs(const std::vector<T>& v) //magnitude
+{
+	return std::sqrt(v * v);
+}
+
+
+template<class T>
 inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& v)
 {
 	for (int i = 0; i < v.size(); i++)
@@ -51,9 +58,7 @@ class IllegalMatrixOp : public std::exception
 	}
 };
 
-//inline float abs(float f) { return std::abs(f); }
-//inline double abs(double d) { return std::abs(d); }
-inline float abs(complex c) { return c.modulus(); }
+
 
 template<class T>
 class Matrix
@@ -87,6 +92,9 @@ public:
 	void swap_rows(int r1, int r2); 
 	void multiply_row(int row, T val);
 	void add_multiple_of_row(int r_dest, int r_src, T mult); //r_dest += mult * r_src
+
+	//misc operations
+	Matrix<T> attach_col(std::vector<T> b) const; //attach column vector b to right of matrix - size of b must = n_rows of matrix
 
 	//inversion/Gaussian elimination stuff
 	Matrix<T> row_ech(T* det = nullptr) const; //row_ech computes determinant on the fly and places it in det if det is non-null and matrix is square

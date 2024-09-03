@@ -39,6 +39,13 @@ struct complex
 
 };
 
+inline complex abs(complex c) { return complex(c.modulus(), 0); }
+
+inline bool operator>(const complex& a, const complex& b) //compare real parts (useful for storing magnitude as a complex number)
+{
+	return a.re > b.re;
+}
+
 inline complex operator+(const complex& a, const complex& b)
 {
 	return { a.re + b.re, a.im + b.im };

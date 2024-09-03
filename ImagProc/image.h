@@ -91,10 +91,6 @@ inline std::ostream& operator<<(std::ostream& stream, const Color& col)
 
 Color col_median(std::vector<Color> colors);
 
-inline float abs(Color col)
-{
-	return col.mag();
-}
 
 /*
 inline Color operator*=(float b, Color& a)

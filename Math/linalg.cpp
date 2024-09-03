@@ -182,6 +182,25 @@ Matrix<T> Matrix<T>::id_augment() const
 	return out;
 }
 
+template<class T>
+Matrix<T> Matrix<T>::attach_col(vector<T> b) const
+{
+	if (b.size() != n_rows())
+	{
+		cout << "ERROR: attach_col - cannot attach column of size " << b.size() << " to matrix with " << n_rows() << " rows " << endl;
+		exit(1);
+	}
+
+	Matrix<T> out(m);
+
+	for (int i = 0; i < n_rows(); i++)
+	{
+		out[i].push_back(b[i]);
+	}
+
+	return out;
+}
+
 template<class T> //wikipedia implementation
 Matrix<T> Matrix<T>::row_ech(T* det) const
 {
