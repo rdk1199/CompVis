@@ -181,6 +181,7 @@ vector<Color> out = { Color::black(), Color::red(), Color::green(), Color::blue(
 
 ExactKernelRegression<vector<float>, Color> f(in, out, 1000, gaussian_basis);
 RidgeKernelRegression<vector<float>, Color> ridge_f(in, out, 1, 1000, gaussian_basis);
+NWKernelRegression<vector<float>, Color> nw_f(in, out, 500, gaussian_basis);
 
 Image orig(1001, 1001, Color::black());
 orig[0][0] = { 0.0, 0.0, 0.0, 255.0 };
@@ -190,12 +191,14 @@ orig[1000][1000] = { 0.0, 0.0, 255.0, 255.0 };
 
 Image ridge_interp(1001, 1001);
 Image interp(1001, 1001);
+Image nw_interp(1001, 1001);
 
 for (int i = 0; i < 1001; i++)
 {
 	for (int j = 0; j < 1001; j++)
 	{
-		ridge_interp[i][j] = ridge_f({ i,j });
+		nw_interp[i][j] = nw_f({ i,j });
+		nw_interp[i][j].a = 255.0f;
 		//interp[i][j] = f({ i,j });
 	}
 }
@@ -203,7 +206,9 @@ for (int i = 0; i < 1001; i++)
 
 orig.save("Images/regression_orig.png");
 //interp.save("Images/regression_interp.png");
-ridge_interp.save("Images/regression_ridge_interp.png");
+//ridge_interp.save("Images/regression_ridge_interp.png");
+
+nw_interp.save("Images/regression_nw_interp.png");
 
 Image bird_sample(bird.width(), bird.height(), Color::black());
 
@@ -234,6 +239,7 @@ for (int i = 0; i < bird.width(); i++)
 }*/
 
 
+/*
 RidgeKernelRegression<vector<float>, Color> bird_ridge_f(bird_in, bird_out, 1, 100, gaussian_basis);
 
 Image bird_ridge_regress(bird.width(), bird.height(), Color::black());
@@ -244,11 +250,26 @@ for (int i = 0; i < bird.width(); i++)
 	{
 		bird_ridge_regress[i][j] = bird_ridge_f({ i,j });
 	}
+}*/
+
+NWKernelRegression<vector<float>, Color> bird_nw_f(bird_in, bird_out, 100, gaussian_basis);
+
+Image bird_nw_regress(bird.width(), bird.height(), Color::black());
+
+for (int i = 0; i < bird.width(); i++)
+{
+	for (int j = 0; j < bird.height(); j++)
+	{
+		bird_nw_regress[i][j] = bird_nw_f({ i,j });
+		bird_nw_regress[i][j].a = 255.0f;
+	}
 }
+
 
 bird_sample.save("Images/bird_sample.png");
 //bird_regress.save("Images/bird_regress.png");
-bird_ridge_regress.save("Images/bird_ridge_regress.png");
+//bird_ridge_regress.save("Images/bird_ridge_regress.png");
+bird_nw_regress.save("Images/bird_nw_regress.png");
 
 	return 0;
 }
