@@ -118,6 +118,28 @@ template<class T> Matrix<T> operator+(const Matrix<T>& A, const Matrix<T>& B);
 template<class T> Matrix<T> operator-(const Matrix<T>& A, const Matrix<T>& B);
 template<class T> Matrix<T> operator*(const Matrix<T>& A, const Matrix<T>& B);
 template<class T> Matrix<T> operator*(const T& c, const Matrix<T>& A);
-template<class T> std::vector<T> operator*(const Matrix<T>& A, std::vector<T>& x);
 template<class T> std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix);
 
+
+//matrix vector multiplication
+template<class S, class T> 
+inline std::vector<T> operator*(const Matrix<S>& A, const std::vector<T>& x)
+{
+	if (x.size() != A.n_cols())
+	{
+		throw IllegalMatrixOp();
+	}
+
+	std::vector<T> product(A.n_rows());
+
+	for (int i = 0; i < product.size(); i++)
+	{
+		product[i] = A.at(i, 0) * x[0];
+		for (int j = 1; j < x.size(); j++)
+		{
+			product[i] = product[i] + A.at(i, j) * x[j];
+		}
+	}
+
+	return product;
+}

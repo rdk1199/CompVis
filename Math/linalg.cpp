@@ -489,6 +489,7 @@ Matrix<T> operator*(const T& c, const Matrix<T>& A)
 	return product;
 }
 
+/*
 template<class T>
 std::vector<T> operator*(const Matrix<T>& A, std::vector<T>& x)
 {
@@ -509,7 +510,7 @@ std::vector<T> operator*(const Matrix<T>& A, std::vector<T>& x)
 	}
 
 	return product;
-}
+}*/
 
 template<class T>
 std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix)
@@ -621,8 +622,8 @@ template Matrix<complex> operator*(const Matrix<complex>& A, const Matrix<comple
 template Matrix<float> operator*(const float& c, const Matrix<float>& A);
 template Matrix<complex> operator*(const complex& c, const Matrix<complex>& A);
 
-template std::vector<float> operator*(const Matrix<float>& A, std::vector<float>& x);
-template std::vector<complex> operator*(const Matrix<complex>& A, std::vector<complex>& x);
+template std::vector<float> operator*(const Matrix<float>& A, const std::vector<float>& x);
+template std::vector<complex> operator*(const Matrix<complex>& A, const std::vector<complex>& x);
 
 
 template std::ostream& operator<<(std::ostream& os, const Matrix<float>& matrix);

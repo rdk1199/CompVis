@@ -24,3 +24,25 @@ public:
 	T operator()(const S& x); //evaluates regression function at given input x
 
 };
+
+template<class S, class T>
+class RidgeKernelRegression 
+{
+private:
+
+	int n_pts; 
+	float (*basis)(float, float);
+	float _falloff;
+	float _lambda;
+
+	std::vector<S> in;
+	std::vector<T> out;
+
+	std::vector<T> weights;
+
+public:
+	
+	RidgeKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float lambda, float falloff, float(*basis_func)(float, float));
+	T operator()(const S& x);
+
+};
