@@ -74,7 +74,7 @@ public:
 
 	int n_rows() const { return m.size(); }
 	int n_cols() const { return m.size()? m[0].size() : 0; }
-
+					    
 	bool is_square() const { return m.size() ? m.size() == m[0].size() : true; }
 	bool in_range(int i, int j) const { return 0 <= i && i < n_rows() && 0 <= j && j < n_cols(); }
 
@@ -144,3 +144,5 @@ inline std::vector<T> operator*(const Matrix<S>& A, const std::vector<T>& x)
 
 	return product;
 }
+
+
