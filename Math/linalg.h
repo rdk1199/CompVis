@@ -30,6 +30,34 @@ inline float abs(const std::vector<T>& v) //magnitude
 	return std::sqrt(v * v);
 }
 
+template<class T>
+inline float p_norm(const std::vector<T>& v, float p = 0)
+{
+	if (v.size() == 0)
+	{
+		return 0;
+	}
+
+	if (p == 0) //infinity norm
+	{
+		float abs_max = abs(v[0]);
+
+		for (int i = 1; i < v.size(); i++)
+		{
+			abs_max = std::max(abs_max, abs(v[i]));
+		}
+
+		return abs_max;
+	}
+
+	float sum;
+	for (int i = 0; i < v.size(); i++)
+	{
+		sum += std::pow(abs(v[i]), p);
+	}
+
+	return std::pow(sum, 1 / p);
+}
 
 template<class T>
 inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& v)

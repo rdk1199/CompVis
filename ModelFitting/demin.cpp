@@ -26,7 +26,7 @@ DEMinimizer<T>::DEMinimizer(int width, int height, std::vector<std::pair<int,int
 		exit(1);
 	}
 
-	Matrix<float> hessian(width * height, width * height);
+	SparseMatrix<float> hessian(width * height, width * height);
 	vector<T> w_data(width * height);
 
 
@@ -58,17 +58,17 @@ DEMinimizer<T>::DEMinimizer(int width, int height, std::vector<std::pair<int,int
 
 	for (int i = 0; i < domain.size(); i++)
 	{
-		int px_index = in_data[i].first + width * in_data[i].second;
+		int px_index = height * in_data[i].first + in_data[i].second;
 		w_data[px_index] = out_data[i];
 	}
 
-	f_vec = gauss_solve(hessian, w_data);
+	f_vec = gauss_seidel_solve(hessian, w_data, .001);
 }
 
 template<class T>
 T DEMinimizer<T>::operator()(int i, int j) const
 {
-	return f_vec[i * g_width + j];
+	return f_vec[j * g_width + i];
 }
 
 template class DEMinimizer<Color>;

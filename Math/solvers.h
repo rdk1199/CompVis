@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "linalg.h"
-
+#include "sparse.h"
 
 template<class T> //solve Ax = b using Gaussian elimination //FOR NOW this assumes a unique solution (i.e. invertible matrix)
 inline std::vector<T> gauss_solve(const Matrix<T>& A, const std::vector<T>& b)
@@ -94,3 +94,33 @@ inline std::vector<T> gauss_solve(const Matrix<S>& A, std::vector<T> b) //solve 
 
 }
 
+
+template<class S, class T>
+inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T> b, float err, int max_iter = 25) //apply Gauss-Seidel iteration to solve Ax = b -> assumes A satisfies convergence conditions
+{
+	std::vector<T> soln(A.n_rows());
+
+	for (int iter = 0; iter < max_iter; iter++)
+	{
+		for (int i = 0; i < soln.size(); i++)
+		{
+			soln[i] = b[i];
+
+			std::map<int, S> ith_row = A.at(i);
+
+			for (auto j = ith_row.begin(); j->first < i; j++)
+			{
+				if (j->first != i) //this check slows things down
+				{
+					soln[i] = soln[i] - j->second * soln[j->first];
+				}
+			}
+
+			soln[i] = soln[i] / A.at(i, i);
+		}
+
+		iter++;
+	}	
+
+	return soln;
+}

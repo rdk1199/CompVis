@@ -274,9 +274,24 @@ for (int i = 0; i < bird.width(); i++)
 	}
 }*/
 
-//DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 1.0f);
+DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 100);
+
+Image bird_demin_img(bird.width(), bird.height());
 
 
+
+for (int i = 0; i < bird.width(); i++)
+{
+	for (int j = 0; j < bird.height(); j++)
+	{
+		bird_demin_img[i][j] = bird_demin(i, j);
+		bird_demin_img[i][j].a = 255.0f;
+	}
+}
+
+bird_demin_img.save("Images/bird_demin.png");
+
+/*
 vector<std::pair<int, int>> in = { {0, 0}, {0, 20}, {20, 0}, {20, 20} };
 vector<Color> out = { Color::black(), Color::red(), Color::green(), Color::blue() };
 
@@ -300,7 +315,7 @@ for (int i = 0; i < 21; i++)
 
 small_col_corner.save("Images/corner_orig.png");
 demin_interp.save("Images/corner_demin.png");
-
+*/
 
 
 bird_sample.save("Images/bird_sample.png");
@@ -320,6 +335,8 @@ for (int i = 0; i < 2000; i++)
 
 SparseMatrix<float> sum_mat = s_mat + t_mat;
 
+//cout << sum_mat[400][400] << endl;
+//cout << sum_mat[399][400] << endl;
 
 	return 0;
 }
