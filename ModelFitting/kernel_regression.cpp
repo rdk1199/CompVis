@@ -39,7 +39,7 @@ ExactKernelRegression<S,T>::ExactKernelRegression(std::vector<S> domain_vals, st
 }
 
 template<class S, class T>
-T ExactKernelRegression<S,T>::operator()(const S& x)
+T ExactKernelRegression<S,T>::operator()(const S& x) const
 {
 	T out = weights[0] * (*basis)(abs(x - in_data[0]), _falloff);
 
@@ -82,7 +82,7 @@ RidgeKernelRegression<S, T>::RidgeKernelRegression(std::vector<S> domain_vals, s
 }
 
 template<class S, class T>
-T RidgeKernelRegression<S, T>::operator()(const S& x)
+T RidgeKernelRegression<S, T>::operator()(const S& x) const
 {
 	T out = weights[0] * (*basis)(abs(x - in_data[0]), _falloff);
 
@@ -112,7 +112,7 @@ NWKernelRegression<S, T>::NWKernelRegression(std::vector<S> domain_vals, std::ve
 
 
 template<class S, class T>
-T NWKernelRegression<S, T>::operator()(const S& x)
+T NWKernelRegression<S, T>::operator()(const S& x) const
 {
 	float weight_sum = (*basis)(abs(x - in_data[0]), _falloff);
 	T out = (*basis)(abs(x - in_data[0]), _falloff)* out_data[0];

@@ -8,6 +8,8 @@
 
 #include "ModelFitting/kernel_regression.h"
 
+#include "ModelFitting/demin.h"
+
 using std::cout;
 using std::endl;
 
@@ -175,7 +177,7 @@ int main()
 	cout << mat.inverse() << endl;
 	cout << mat.det() << endl;*/
 
-
+/*
 vector<vector<float>> in = { {0.0, 0.0}, {0.0, 1000.0}, {1000.0, 0.0}, {1000.0, 1000.0} };
 vector<Color> out = { Color::black(), Color::red(), Color::green(), Color::blue() };
 
@@ -209,9 +211,12 @@ orig.save("Images/regression_orig.png");
 //ridge_interp.save("Images/regression_ridge_interp.png");
 
 nw_interp.save("Images/regression_nw_interp.png");
+*/
+
 
 Image bird_sample(bird.width(), bird.height(), Color::black());
 
+vector<std::pair<int, int>> bird_in_int;
 vector<vector<float>> bird_in;
 vector<Color> bird_out;
 
@@ -221,6 +226,7 @@ for (int i = 0; i < bird_sample.width(); i += 100)
 	{
 		bird_sample[i][j] = bird[i][j];
 		bird_in.push_back({ i,j });
+		bird_in_int.push_back({ i,j });
 		bird_out.push_back(bird[i][j]);
 	}
 }
@@ -252,6 +258,7 @@ for (int i = 0; i < bird.width(); i++)
 	}
 }*/
 
+/*
 NWKernelRegression<vector<float>, Color> bird_nw_f(bird_in, bird_out, 100, gaussian_basis);
 
 Image bird_nw_regress(bird.width(), bird.height(), Color::black());
@@ -263,13 +270,41 @@ for (int i = 0; i < bird.width(); i++)
 		bird_nw_regress[i][j] = bird_nw_f({ i,j });
 		bird_nw_regress[i][j].a = 255.0f;
 	}
+}*/
+
+//DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 1.0f);
+
+
+vector<std::pair<int, int>> in = { {0, 0}, {0, 20}, {20, 0}, {20, 20} };
+vector<Color> out = { Color::black(), Color::red(), Color::green(), Color::blue() };
+
+Image small_col_corner(21, 21, Color::black());
+small_col_corner[0][0] = { 0.0, 0.0, 0.0, 255.0 };
+small_col_corner[0][20] = { 255.0, 0.0, 0.0, 255.0 };
+small_col_corner[20][0] = { 0.0, 255.0, 0.0, 255.0 };
+small_col_corner[20][20] = { 0.0, 0.0, 255.0, 255.0 };
+
+DEMinimizer<Color> demin(21, 21, in, out, 1.0f);
+Image demin_interp(21, 21);
+
+for (int i = 0; i < 21; i++)
+{
+	for (int j = 0; j <21; j++)
+	{
+		demin_interp[i][j] = demin( i,j );
+	}
 }
+
+
+small_col_corner.save("Images/corner_orig.png");
+demin_interp.save("Images/corner_demin.png");
+
 
 
 bird_sample.save("Images/bird_sample.png");
 //bird_regress.save("Images/bird_regress.png");
 //bird_ridge_regress.save("Images/bird_ridge_regress.png");
-bird_nw_regress.save("Images/bird_nw_regress.png");
+//bird_nw_regress.save("Images/bird_nw_regress.png");
 
 	return 0;
 }

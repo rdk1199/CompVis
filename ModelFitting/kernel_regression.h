@@ -21,7 +21,7 @@ private:
 public:
 
 	ExactKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float falloff, float(*basis_func)(float, float)); //constructor computes weights based off given data
-	T operator()(const S& x); //evaluates regression function at given input x
+	T operator()(const S& x) const; //evaluates regression function at given input x
 
 };
 
@@ -43,7 +43,7 @@ private:
 public:
 	
 	RidgeKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float lambda, float falloff, float(*basis_func)(float, float));
-	T operator()(const S& x);
+	T operator()(const S& x) const;
 
 };
 
@@ -62,6 +62,6 @@ class NWKernelRegression //Nadaraya-Watson
 
 	public:
 		NWKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float falloff, float(*basis_func)(float, float)); //constructor computes weights based off given data
-		T operator()(const S& x); //evaluates regression function at given input x
+		T operator()(const S& x) const; //evaluates regression function at given input x
 
 };
