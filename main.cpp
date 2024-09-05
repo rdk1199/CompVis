@@ -3,6 +3,8 @@
 #include "Math/numbers.h"
 #include "Math/linalg.h"
 #include "Math/functions.h"
+#include "Math/sparse.h"
+
 
 #include "ImagProc/image.h"
 
@@ -305,6 +307,19 @@ bird_sample.save("Images/bird_sample.png");
 //bird_regress.save("Images/bird_regress.png");
 //bird_ridge_regress.save("Images/bird_ridge_regress.png");
 //bird_nw_regress.save("Images/bird_nw_regress.png");
+
+
+SparseMatrix<float> s_mat(2000, 2000);
+SparseMatrix<float> t_mat(2000, 2000);
+
+for (int i = 0; i < 2000; i++)
+{
+	s_mat[i][i] = i;
+	t_mat[i][i] = 2000 - i - 1;
+}
+
+SparseMatrix<float> sum_mat = s_mat + t_mat;
+
 
 	return 0;
 }
