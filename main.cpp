@@ -271,7 +271,7 @@ for (int i = 0; i < bird.width(); i++)
 		bird_nw_regress[i][j].a = 255.0f;
 	}
 }*/
-/*
+
 DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 1);
 
 Image bird_demin_img(bird.width(), bird.height());
@@ -288,9 +288,9 @@ for (int i = 0; i < bird.width(); i++)
 }
 
 bird_demin_img.save("Images/bird_demin.png");
-*/
 
-int corner_size = 5;
+/*
+int corner_size = 1000;
 vector<std::pair<int, int>> in = { {0, 0}, {0, corner_size}, {corner_size, 0}, {corner_size, corner_size} };
 vector<Color> out = { Color::black(), Color::red(), Color::green(), Color::blue() };
 
@@ -300,7 +300,7 @@ small_col_corner[0][corner_size] = { 255.0, 0.0, 0.0, 255.0 };
 small_col_corner[corner_size][0] = { 0.0, 255.0, 0.0, 255.0 };
 small_col_corner[corner_size][corner_size] = { 0.0, 0.0, 255.0, 255.0 };
 
-DEMinimizer<Color> demin(corner_size + 1, corner_size + 1, in, out, 0.5f);
+DEMinimizer<Color> demin(corner_size + 1, corner_size + 1, in, out, 1);
 Image demin_interp(corner_size + 1, corner_size + 1);
 
 for (int i = 0; i < corner_size + 1; i++)
@@ -308,6 +308,7 @@ for (int i = 0; i < corner_size + 1; i++)
 	for (int j = 0; j < corner_size + 1; j++)
 	{
 		demin_interp[i][j] = demin( i,j );
+		demin_interp[i][j].a = 255.0;
 	}
 }
 
@@ -315,7 +316,7 @@ for (int i = 0; i < corner_size + 1; i++)
 small_col_corner.save("Images/corner_orig.png");
 demin_interp.save("Images/corner_demin.png");
 
-
+*/
 
 //bird_sample.save("Images/bird_sample.png");
 //bird_regress.save("Images/bird_regress.png");

@@ -54,7 +54,7 @@ inline std::vector<T> gauss_solve(const Matrix<S>& A, std::vector<T> b) //solve 
 			}
 		}
 
-		if (out[i_max][c] == 0) //no viable pivot in this column
+		if (abs(out[i_max][c]) < 1e-8) //zero column
 		{
 			c++;
 			continue;
@@ -65,9 +65,9 @@ inline std::vector<T> gauss_solve(const Matrix<S>& A, std::vector<T> b) //solve 
 		b[r] = b[i_max];
 		b[i_max] = tmp;
 
-		out.multiply_row(r, 1.0f / out[r][c]);
-		out[r][c] = 1.0f; //make sure this is exactly 1
-		b[r] = b[r] * 1.0f / out[r][c];
+		out.multiply_row(r, 1.0 / out[r][c]);
+		out[r][c] = 1.0; //make sure this is exactly 1
+		b[r] = b[r] * 1.0 / out[r][c];
 
 		for (int i = 0; i < r; i++)
 		{
@@ -95,7 +95,7 @@ inline std::vector<T> gauss_solve(const Matrix<S>& A, std::vector<T> b) //solve 
 
 
 template<class S, class T>
-inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T> b, float err = 1e-4, int max_iter = 25) //apply Gauss-Seidel iteration to solve Ax = b -> assumes A satisfies convergence conditions, so be careful
+inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T> b, double err = 1e-4, int max_iter = 250) //apply Gauss-Seidel iteration to solve Ax = b -> assumes A satisfies convergence conditions, so be careful
 {
 	std::vector<T> soln(A.n_rows());
 
@@ -107,11 +107,11 @@ inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T
 
 			std::map<int, S> ith_row = A.at(i);
 
-			for (auto j = ith_row.begin(); j->first < i; j++)
+			for (auto j = ith_row.begin(); j != ith_row.end(); j++)
 			{
 				if (j->first != i) //this check slows things down
 				{
-					soln[i] = soln[i] - j->second * soln[j->first];
+					soln[i] -= j->second * soln[j->first];
 				}
 			}
 

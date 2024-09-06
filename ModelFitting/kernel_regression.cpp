@@ -9,7 +9,7 @@ using std::endl;
 using std::vector;
 
 template<class S, class T>
-ExactKernelRegression<S,T>::ExactKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float falloff, float(*basis_func)(float, float)) :
+ExactKernelRegression<S,T>::ExactKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, double falloff, double(*basis_func)(double, double)) :
 	n_pts(domain_vals.size()),
 	basis(basis_func),
 	_falloff(falloff),
@@ -24,7 +24,7 @@ ExactKernelRegression<S,T>::ExactKernelRegression(std::vector<S> domain_vals, st
 	}
 
 
-	Matrix<float> phi(n_pts, n_pts);
+	Matrix<double> phi(n_pts, n_pts);
 
 	for (int i = 0; i < n_pts; i++)
 	{
@@ -53,7 +53,7 @@ T ExactKernelRegression<S,T>::operator()(const S& x) const
 
 
 template<class S, class T>
-RidgeKernelRegression<S, T>::RidgeKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float lambda, float falloff, float(*basis_func)(float, float)) :
+RidgeKernelRegression<S, T>::RidgeKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, double lambda, double falloff, double(*basis_func)(double, double)) :
 	n_pts(domain_vals.size()),
 	basis(basis_func),
 	_lambda(lambda),
@@ -67,7 +67,7 @@ RidgeKernelRegression<S, T>::RidgeKernelRegression(std::vector<S> domain_vals, s
 		exit(1);
 	}
 
-	Matrix<float> phi(n_pts, n_pts);
+	Matrix<double> phi(n_pts, n_pts);
 
 	for (int i = 0; i < n_pts; i++)
 	{
@@ -77,7 +77,7 @@ RidgeKernelRegression<S, T>::RidgeKernelRegression(std::vector<S> domain_vals, s
 		}
 	}
 
-	weights = gauss_solve(phi.transpose() * phi + _lambda * Matrix<float>::identity(n_pts), phi.transpose() * out_data); //should do this with Cholesky factorization (later)
+	weights = gauss_solve(phi.transpose() * phi + _lambda * Matrix<double>::identity(n_pts), phi.transpose() * out_data); //should do this with Cholesky factorization (later)
 
 }
 
@@ -95,7 +95,7 @@ T RidgeKernelRegression<S, T>::operator()(const S& x) const
 }
 
 template<class S, class T>
-NWKernelRegression<S, T>::NWKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float falloff, float(*basis_func)(float, float)) :
+NWKernelRegression<S, T>::NWKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, double falloff, double(*basis_func)(double, double)) :
 	n_pts(domain_vals.size()),
 	basis(basis_func),
 	_falloff(falloff),
@@ -114,7 +114,7 @@ NWKernelRegression<S, T>::NWKernelRegression(std::vector<S> domain_vals, std::ve
 template<class S, class T>
 T NWKernelRegression<S, T>::operator()(const S& x) const
 {
-	float weight_sum = (*basis)(abs(x - in_data[0]), _falloff);
+	double weight_sum = (*basis)(abs(x - in_data[0]), _falloff);
 	T out = (*basis)(abs(x - in_data[0]), _falloff)* out_data[0];
 
 	for (int i = 1; i < n_pts; i++)
@@ -126,10 +126,10 @@ T NWKernelRegression<S, T>::operator()(const S& x) const
 	return (1.0f/weight_sum) * out;
 }
 
-template class ExactKernelRegression<float, float>;
-template class ExactKernelRegression<vector<float>, float>;
-template class ExactKernelRegression<vector<float>, Color>;
+template class ExactKernelRegression<double, double>;
+template class ExactKernelRegression<vector<double>, double>;
+template class ExactKernelRegression<vector<double>, Color>;
 
-template class RidgeKernelRegression<vector<float>, Color>;
+template class RidgeKernelRegression<vector<double>, Color>;
 
-template class NWKernelRegression<vector<float>, Color>;
+template class NWKernelRegression<vector<double>, Color>;

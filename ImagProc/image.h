@@ -9,10 +9,10 @@
 
 struct Color
 {
-	float r = 0, g = 0, b = 0, a = 0;
+	double r = 0, g = 0, b = 0, a = 0;
 
-	float sq_mag() const { return (r * r + g * g + b * b + a * a); } //magnitude of RGBA values in 0-1 scale
-	float mag() const { return std::sqrt(sq_mag()); }
+	double sq_mag() const { return (r * r + g * g + b * b + a * a); } //magnitude of RGBA values in 0-1 scale
+	double mag() const { return std::sqrt(sq_mag()); }
 	Color invert() const { return { 255.0 - r, 255.0 - g, 255.0 - b, a }; }
 	Color abs() const { return { std::abs(r), std::abs(g), std::abs(b), std::abs(a) }; }
 
@@ -21,7 +21,7 @@ struct Color
 	static Color red() { return { 255.0f, 0.0f, 0.0, 255.0f }; }
 	static Color green() { return { 0.0f, 255.0f, 0.0, 255.0f }; }
 	static Color blue() { return { 0.0f, 0.0f, 255.0, 255.0f }; }
-	static Color gray(float val, float alpha = 255.0f) { return { val, val, val, alpha }; } //make grayscale color with given value and alpha
+	static Color gray(double val, double alpha = 255.0f) { return { val, val, val, alpha }; } //make grayscale color with given value and alpha
 };
 
 
@@ -30,12 +30,12 @@ inline Color operator+(const Color& a, const Color& b)
 	return { a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a };
 }
 
-inline Color operator+(const Color& a, float b)
+inline Color operator+(const Color& a, double b)
 {
 	return { a.r + b, a.g + b, a.b + b, a.a + b};
 }
 
-inline Color operator+(float b, const Color& a)
+inline Color operator+(double b, const Color& a)
 {
 	return a + b;
 }
@@ -46,7 +46,7 @@ inline Color operator+=(Color& a, const Color& b)
 	return a;
 }
 
-inline Color operator+=(Color& a, float b)
+inline Color operator+=(Color& a, double b)
 {
 	a = a + b;
 	return a;
@@ -55,7 +55,7 @@ inline Color operator+=(Color& a, float b)
 
 inline Color operator-(const Color& a, const Color& b)
 {
-	return { a.r - b.r, a.g - b.g, a.b - b.b, a.a- b.a };
+	return { a.r - b.r, a.g - b.g, a.b - b.b, a.a - b.a };
 }
 
 inline Color operator*(const Color& a, const Color& b)
@@ -68,23 +68,23 @@ inline Color operator/(const Color& a, const Color& b)
 	return { a.r / b.r, a.g / b.g, a.b / b.b, a.a / b.a };
 }
 
-inline Color operator/(const Color& a, float b)
+inline Color operator/(const Color& a, double b)
 {
 	return { a.r / b, a.g / b, a.b / b, a.a / b };
 }
 
-inline Color operator*(float b, const Color& a)
+inline Color operator*(double b, const Color& a)
 {
 	return { a.r * b, a.g * b, a.b * b, a.a * b };
 }
 
-inline Color operator*(const Color& a, float b)
+inline Color operator*(const Color& a, double b)
 {
 	return b * a;
 }
 
 
-inline float abs(const Color& a)
+inline double abs(const Color& a)
 {
 	return a.mag();
 }
@@ -96,7 +96,7 @@ inline Color operator*=(Color& a, const Color& b)
 	return a;
 }
 
-inline Color operator*=(Color& a, float b)
+inline Color operator*=(Color& a, double b)
 {
 	a = a * b;
 	return a;
@@ -112,14 +112,14 @@ Color col_median(std::vector<Color> colors);
 
 
 /*
-inline Color operator*=(float b, Color& a)
+inline Color operator*=(double b, Color& a)
 {
 	a = a * b;
 	return a;
 }*/
 
 
-inline Color pow(const Color& c, float g)
+inline Color pow(const Color& c, double g)
 {
 	return { std::pow(c.r, g), std::pow(c.g, g),std::pow(c.b, g),c.a };
 }
@@ -158,11 +158,11 @@ public:
 	Color clamp_at(int i, int j) const; //returns pixel value if (i,j) is in range, else returns the clamped value (i.e. the same as if the image were clamp padded)
 
 	//point processes
-	void gain(float val);
+	void gain(double val);
 	void gain(Color val);
-	void bias(float val);
+	void bias(double val);
 	void bias(Color val);
-	void gamma_correct(float gamma);
+	void gamma_correct(double gamma);
 	void abs(); //takes absolute value of every color (in case some color values are negative) -> mainly for measuring relative difference between two images
 
 
@@ -177,7 +177,7 @@ public:
 	Image clamp_pad_to_size(int width, int height) const;
 	*/
 
-	static Image blend(const Image& im1, const Image& im2, float alpha);
+	static Image blend(const Image& im1, const Image& im2, double alpha);
 	
 	//image stats
 	std::vector<ImgHistEntry> histogram() const;
@@ -189,7 +189,7 @@ public:
 	Image copy() const; //returns identical copy
 
 	Image hist_equalize() const; //histogram equalization
-	Image lin_filter(const Matrix<float>& filter) const; //clamp pads image, then applies linear filter - filter must be square matrix of odd size
+	Image lin_filter(const Matrix<double>& filter) const; //clamp pads image, then applies linear filter - filter must be square matrix of odd size
 	
 	//FILTERS; all filters clamp pad the image before being applied
 
@@ -206,10 +206,10 @@ public:
 	Image invert() const; //inverts color channels
 
 	//non-linear filters
-	Image sharpen(float alpha = 0.25f) const;
+	Image sharpen(double alpha = 0.25f) const;
 	Image median(int radius) const; //median filter with given radius (slow)
-	Image bilateral(int radius, float sigma_d, float sigma_r) const;
-	Image iter_bilateral(unsigned int iter, int radius, float sigma_d, float sigma_r) const;
+	Image bilateral(int radius, double sigma_d, double sigma_r) const;
+	Image iter_bilateral(unsigned int iter, int radius, double sigma_d, double sigma_r) const;
 
 	//monochromatize
 	Image max_monochrome() const; //makes black and white copy -> takes the max of the R,G,B channels
@@ -217,7 +217,7 @@ public:
 	Image grayscale() const; //makes black and white copy using proper weighting to account for luminance
 
 	//binary image processing 
-	Image binarize(float threshold) const; //turn grayscale images into binary with given threshold (between 0 and 1)
+	Image binarize(double threshold) const; //turn grayscale images into binary with given threshold (between 0 and 1)
 
 	//helper for BINARY IMAGES
 	bool is_one(int x, int y) const; 
@@ -235,18 +235,18 @@ public:
 	//
 
 	//interpolation
-	Color bicubic_interp(float x, float y, float a = -1.0f) const;
+	Color bicubic_interp(double x, double y, double a = -1.0f) const;
 
 	//scaling
-	Image bicubic_upscale(int rate, float a = -1.0f) const; //scale up image by factor of rate (bicubic interpolation)
-	Image bicubic_decimate(int rate, float a = -1.0f) const; //scale down image by factor of rate
+	Image bicubic_upscale(int rate, double a = -1.0f) const; //scale up image by factor of rate (bicubic interpolation)
+	Image bicubic_decimate(int rate, double a = -1.0f) const; //scale down image by factor of rate
 
 
 	//transformations (inverse warping)
-	Image affine_transform(const Matrix<float>& trans) const; //3 x 3 affine transform matrix (hom. coordinates) - implement inverse warping with bicubic interp
-	Image translate(float dx, float dy) const;
-	Image rotate(float angle) const; //rotates around CENTER of image
-	Image scale(float sx, float sy) const; //places origin at CENTER of image for scaling
+	Image affine_transform(const Matrix<double>& trans) const; //3 x 3 affine transform matrix (hom. coordinates) - implement inverse warping with bicubic interp
+	Image translate(double dx, double dy) const;
+	Image rotate(double angle) const; //rotates around CENTER of image
+	Image scale(double sx, double sy) const; //places origin at CENTER of image for scaling
 	
 
 
@@ -254,11 +254,11 @@ public:
 
 Image operator+(const Image& im1, const Image& im2);
 Image operator-(const Image& im1, const Image& im2);
-Image operator*(float c, const Image& img);
+Image operator*(double c, const Image& img);
 
 
 
-inline Image operator*(const Matrix<float>& filter, const Image& img) //convolve filter with image
+inline Image operator*(const Matrix<double>& filter, const Image& img) //convolve filter with image
 {
 	return img.lin_filter(filter);
 }

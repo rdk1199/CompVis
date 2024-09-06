@@ -13,7 +13,7 @@ using std::vector;
 
 Color col_median(std::vector<Color> colors)
 {
-	vector<float> r, g, b,a;
+	vector<double> r, g, b,a;
 
 	for (int i = 0; i < colors.size(); i++)
 	{
@@ -100,7 +100,7 @@ Color Image::clamp_at(int i, int j) const
 	return pixels[clamp_i][clamp_j];
 }
 
-void Image::gain(float val)
+void Image::gain(double val)
 {
 	for (int i = 0; i <_width; i++)
 	{
@@ -122,7 +122,7 @@ void Image::gain(Color val)
 	}
 }
 
-void Image::bias(float val)
+void Image::bias(double val)
 {
 	for (int i = 0; i <_width; i++)
 	{
@@ -144,13 +144,13 @@ void Image::bias(Color val)
 	}
 }
 
-void Image::gamma_correct(float gamma)
+void Image::gamma_correct(double gamma)
 {
 	for (int i = 0; i <_width; i++)
 	{
 		for (int j = 0; j <_height; j++)
 		{
-			pixels[i][j] = pow(pixels[i][j], 1.0f/gamma);
+			pixels[i][j] = pow(pixels[i][j], 1.0/gamma);
 		}
 	}
 }
@@ -197,7 +197,7 @@ Image operator-(const Image& im1, const Image& im2)
 	return out;
 }
 
-Image operator*(float c, const Image& img)
+Image operator*(double c, const Image& img)
 {
 	Image out(img.width(), img.height());
 
@@ -222,11 +222,11 @@ Image Image::copy() const
 	return Image(pixels);
 }
 
-Image Image::blend(const Image& im1, const Image& im2, float alpha)
+Image Image::blend(const Image& im1, const Image& im2, double alpha)
 {
-	alpha = std::clamp(alpha, 0.0f, 1.0f);
+	alpha = std::clamp(alpha, 0.0, 1.0);
 
-	return alpha * im1 + (1.0f - alpha) * im2;
+	return alpha * im1 + (1.0 - alpha) * im2;
 }
 
 void Image::abs()
@@ -385,7 +385,7 @@ vector<ImgHistEntry> Image::cum_dist() const
 	
 	for (int i = 0; i < out.size(); i++)
 	{
-		out[i] *= 1.0f / N;
+		out[i] *= 1.0 / N;
 	}
 		
 	return out;
@@ -422,7 +422,7 @@ Image Image::hist_equalize() const
 	return out;
 }
 
-Color compute_lin_fil_px_val(int i, int j, Image& padded_img, const Matrix<float>& filter) //helper function for lin_filter
+Color compute_lin_fil_px_val(int i, int j, Image& padded_img, const Matrix<double>& filter) //helper function for lin_filter
 {
 	Color col;
 
@@ -442,7 +442,7 @@ Color compute_lin_fil_px_val(int i, int j, Image& padded_img, const Matrix<float
 	return col;
 }
 
-Image Image::lin_filter(const Matrix<float>& filter) const
+Image Image::lin_filter(const Matrix<double>& filter) const
 {
 	if (filter.n_cols() % 2 == 0 || filter.n_rows() % 2 == 0 || filter.n_rows() == 0)
 	{
@@ -474,7 +474,7 @@ Image Image::box_filter(int size) const
 {
 	size = size % 2 ? size: size + 1;//make the box odd sized
 
-	Matrix<float> box(vector<vector<float>>(size, vector<float>(size, 1.0f/(size * size))));
+	Matrix<double> box(vector<vector<double>>(size, vector<double>(size, 1.0/(size * size))));
 
 	return lin_filter(box);
 
@@ -484,7 +484,7 @@ Image Image::box_filter(int size) const
 Image Image::gauss_blur() const
 {
 
-	Matrix<float> gauss_filter(
+	Matrix<double> gauss_filter(
 		{ {1,4,6,4,1},
 		{4,16,24,16,4},
 		{6,24,36,24,6},
@@ -493,14 +493,14 @@ Image Image::gauss_blur() const
 
 	);
 
-	gauss_filter = (1.0f / 256.0f) * gauss_filter;
+	gauss_filter = (1.0 / 256.0) * gauss_filter;
 
 	return lin_filter(gauss_filter);
 }
 
 Image Image::sobel() const
 {
-	Matrix<float> sobel(
+	Matrix<double> sobel(
 		{
 		{-1,0,1},
 		{-2,0,2},
@@ -508,7 +508,7 @@ Image Image::sobel() const
 		}
 	);
 
-	sobel = (1.0f / 8) * sobel;
+	sobel = (1.0 / 8) * sobel;
 
 	return lin_filter(sobel);
 }
@@ -516,7 +516,7 @@ Image Image::sobel() const
 Image Image::corner() const
 {
 
-	Matrix<float> corners(
+	Matrix<double> corners(
 		{
 			{1, -2, 1},
 			{-2, 4, -2},
@@ -524,7 +524,7 @@ Image Image::corner() const
 		}
 	);
 
-	corners = 0.25f * corners;
+	corners = 0.25 * corners;
 
 	return lin_filter(corners);
 }
@@ -558,7 +558,7 @@ Image Image::integral() const
 
 Image Image::normalize() const
 {
-	float max = 0.0f;
+	double max = 0.0;
 
 	for (int i = 0; i < _width; i++)
 	{
@@ -568,7 +568,7 @@ Image Image::normalize() const
 		}
 	}
 
-	float scale = 255.0f / max;
+	double scale = 255.0 / max;
 
 	return scale * (*this);
 }
@@ -588,9 +588,9 @@ Image Image::invert() const
 	return out;
 }
 
-Image Image::sharpen(float alpha) const
+Image Image::sharpen(double alpha) const
 {
-	return  (1.0f + alpha) * (*this) - alpha * gauss_blur();
+	return  (1.0 + alpha) * (*this) - alpha * gauss_blur();
 }
 
 Image Image::median(int radius) const
@@ -633,7 +633,7 @@ Image Image::median(int radius) const
 }
 
 //bilateral helpers
-double bilateral_domain_kernel(int dx, int dy, float sigma_d)
+double bilateral_domain_kernel(int dx, int dy, double sigma_d)
 {
 	double sq_dist = dx * dx + dy * dy;
 
@@ -643,7 +643,7 @@ double bilateral_domain_kernel(int dx, int dy, float sigma_d)
 
 }
 
-double bilateral_range_kernel(Color center_color, Color nbr_color, float sigma_r)
+double bilateral_range_kernel(Color center_color, Color nbr_color, double sigma_r)
 {
 	double sq_dist = (nbr_color - center_color).sq_mag();
 
@@ -652,7 +652,7 @@ double bilateral_range_kernel(Color center_color, Color nbr_color, float sigma_r
 	return out;
 }
 
-Image Image::bilateral(int radius, float sigma_d, float sigma_r) const
+Image Image::bilateral(int radius, double sigma_d, double sigma_r) const
 {
 	if (radius < 0)
 	{
@@ -669,13 +669,13 @@ Image Image::bilateral(int radius, float sigma_d, float sigma_r) const
 		for (int j = 0; j < _height; j++)
 		{
 			Color weighted_sum = { 0,0,0,0 };
-			float total_weight = 0.0f;
+			double total_weight = 0.0;
 
 			for (int k = -radius; k <= radius; k++)
 			{
 				for (int l = -radius; l <= radius; l++)
 				{
-					float bilat_wt_func = bilateral_domain_kernel(k, l, sigma_d) * bilateral_range_kernel(padded_img[i + radius][j + radius], padded_img[i + radius + k][j + radius + l], sigma_r);
+					double bilat_wt_func = bilateral_domain_kernel(k, l, sigma_d) * bilateral_range_kernel(padded_img[i + radius][j + radius], padded_img[i + radius + k][j + radius + l], sigma_r);
 
 					weighted_sum += bilat_wt_func * padded_img[i + radius + k][j + radius + l];
 					total_weight += bilat_wt_func;
@@ -683,7 +683,7 @@ Image Image::bilateral(int radius, float sigma_d, float sigma_r) const
 				}
 			}
 
-			out[i][j] = (1.0f / total_weight) * weighted_sum;
+			out[i][j] = (1.0 / total_weight) * weighted_sum;
 
 		}
 	}
@@ -692,7 +692,7 @@ Image Image::bilateral(int radius, float sigma_d, float sigma_r) const
 
 }
 
-Image Image::iter_bilateral(unsigned int iter, int radius, float sigma_d, float sigma_r) const
+Image Image::iter_bilateral(unsigned int iter, int radius, double sigma_d, double sigma_r) const
 {
 	Image current = *this;
 
@@ -712,7 +712,7 @@ Image Image::max_monochrome() const
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			float max = std::max({ pixels[i][j].r, pixels[i][j].g, pixels[i][j].b });
+			double max = std::max({ pixels[i][j].r, pixels[i][j].g, pixels[i][j].b });
 			out[i][j] = { max, max, max, pixels[i][j].a };
 		}
 	}
@@ -728,7 +728,7 @@ Image Image::mean_monochrome() const
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			float avg = mean(vector<float>({ pixels[i][j].r, pixels[i][j].g, pixels[i][j].b }));
+			double avg = mean(vector<double>({ pixels[i][j].r, pixels[i][j].g, pixels[i][j].b }));
 			out[i][j] = Color::gray(avg, pixels[i][j].a);
 		}
 	}
@@ -745,7 +745,7 @@ Image Image::grayscale() const
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			float val = 0.2126 * pixels[i][j].r + 0.7152 * pixels[i][j].g + 0.0722 * pixels[i][j].b;
+			double val = 0.2126 * pixels[i][j].r + 0.7152 * pixels[i][j].g + 0.0722 * pixels[i][j].b;
 			out[i][j] = { val,val,val, pixels[i][j].a };
 		}
 	}
@@ -753,7 +753,7 @@ Image Image::grayscale() const
 	return out;
 }
 
-Image Image::binarize(float threshold) const
+Image Image::binarize(double threshold) const
 {
 	Image out(_width, _height);
 
@@ -761,8 +761,8 @@ Image Image::binarize(float threshold) const
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			float val = pixels[i][j].r/255.0 >= threshold ? 255.0f : 0.0f;
-			out[i][j] = { val, val, val, 255.0f };
+			double val = pixels[i][j].r/255.0 >= threshold ? 255.0 : 0.0;
+			out[i][j] = { val, val, val, 255.0 };
 		}
 	}
 	
@@ -771,7 +771,7 @@ Image Image::binarize(float threshold) const
 
 bool Image::is_one(int x, int y) const
 {
-	return in_range(x, y) && pixels[x][y].r >= 254.0f;
+	return in_range(x, y) && pixels[x][y].r >= 254.0;
 }
 
 int Image::count_ones(int x, int y, int radius) const
@@ -799,7 +799,7 @@ Image Image::dilate(int radius) const
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			out[i][j] = threshold(count_ones(i, j, radius), 1)* Color{ 255.0f, 255.0f, 255.0f, 0.0f } + Color{0.0f, 0.0f, 0.0f, 255.0f};
+			out[i][j] = threshold(count_ones(i, j, radius), 1)* Color{ 255.0, 255.0, 255.0, 0.0 } + Color{0.0, 0.0, 0.0, 255.0};
 		}
 	}
 
@@ -817,7 +817,7 @@ Image Image::erode(int radius) const
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			out[i][j] = threshold(count_ones(i, j, radius), thresh) * Color { 255.0f, 255.0f, 255.0f, 0.0f } + Color{ 0.0f, 0.0f, 0.0f, 255.0f };
+			out[i][j] = threshold(count_ones(i, j, radius), thresh) * Color { 255.0, 255.0, 255.0, 0.0 } + Color{ 0.0, 0.0, 0.0, 255.0 };
 		}
 	}
 
@@ -834,7 +834,7 @@ Image Image::majority(int radius) const
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			out[i][j] = threshold(count_ones(i, j, radius), thresh) * Color { 255.0f, 255.0f, 255.0f, 0.0f } + Color{ 0.0f, 0.0f, 0.0f, 255.0f };
+			out[i][j] = threshold(count_ones(i, j, radius), thresh) * Color { 255.0, 255.0, 255.0, 0.0 } + Color{ 0.0, 0.0, 0.0, 255.0 };
 		}
 	}
 
@@ -853,7 +853,7 @@ Image Image::close(int radius) const
 
 Image Image::manhattan_dist_trans() const //two-pass algorithm described in Szeliski (pg. 112)
 {
-	float large = 2 * (_width + _height); //max distance would be _width + _height (or something like that) so this value is only place holder and will not appear in final image
+	double large = 2 * (_width + _height); //max distance would be _width + _height (or something like that) so this value is only place holder and will not appear in final image
 
 	Image out(_width, _height);
 
@@ -913,7 +913,7 @@ Image Image::manhattan_dist_trans() const //two-pass algorithm described in Szel
 	return out;
 }
 
-Color Image::bicubic_interp(float x, float y, float a) const
+Color Image::bicubic_interp(double x, double y, double a) const
 {
 	//truncate coords
 	int x_trunc = static_cast<int>(x); 
@@ -940,7 +940,7 @@ Color Image::bicubic_interp(float x, float y, float a) const
 	return out;
 }
 
-Image Image::bicubic_upscale(int rate, float a) const
+Image Image::bicubic_upscale(int rate, double a) const
 {
 	Image out(rate * _width, rate * _height);
 
@@ -959,7 +959,7 @@ Image Image::bicubic_upscale(int rate, float a) const
 			{
 				for (int l = y_lo - 3; l <= y_lo + 3; l++)
 				{
-					col += clamp_at(k, l) * bicubic_spline_2d(static_cast<float>(i) / rate - k, static_cast<float>(j) / rate - l, a);
+					col += clamp_at(k, l) * bicubic_spline_2d(static_cast<double>(i) / rate - k, static_cast<double>(j) / rate - l, a);
 
 				}
 			}
@@ -973,7 +973,7 @@ Image Image::bicubic_upscale(int rate, float a) const
 }
 
 
-Image Image::bicubic_decimate(int rate, float a) const
+Image Image::bicubic_decimate(int rate, double a) const
 {
 	Image out(_width / rate, _height / rate);
 
@@ -994,7 +994,7 @@ Image Image::bicubic_decimate(int rate, float a) const
 			{
 				for (int l = y_lo; l <= y_hi; l++)
 				{
-					col += (1.0f/(rate * rate)) * clamp_at(k, l) * bicubic_spline_2d(i - static_cast<float>(k) / rate, j - static_cast<float>(l)/rate, a);
+					col += (1.0/(rate * rate)) * clamp_at(k, l) * bicubic_spline_2d(i - static_cast<double>(k) / rate, j - static_cast<double>(l)/rate, a);
 				}
 			}
 
@@ -1006,7 +1006,7 @@ Image Image::bicubic_decimate(int rate, float a) const
 	return out;
 }
 
-Image Image::affine_transform(const Matrix<float>& trans) const //implement inverse warping
+Image Image::affine_transform(const Matrix<double>& trans) const //implement inverse warping
 {
 	if (trans.n_rows() != 3 || trans.n_cols() != 3)
 	{
@@ -1015,7 +1015,7 @@ Image Image::affine_transform(const Matrix<float>& trans) const //implement inve
 	}
 
 	
-	Matrix<float> inv_trans = trans.quick_inv_3();
+	Matrix<double> inv_trans = trans.quick_inv_3();
 
 	Image out(_width, _height);
 
@@ -1023,17 +1023,17 @@ Image Image::affine_transform(const Matrix<float>& trans) const //implement inve
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			vector<float> coord = { i, j ,1.0f };
-			vector<float> trans_coord = inv_trans * coord;
+			vector<double> coord = { i, j ,1.0 };
+			vector<double> trans_coord = inv_trans * coord;
 
 
-			if (trans_coord[2] == 0.0f)
+			if (trans_coord[2] == 0.0)
 			{
 				cout << "ERROR: Image::affine_transform: homogeneous coordinate error: transformation matrix: \n" << trans << " \n (i,j): " << i << ", " << j << endl;
 				exit(1);
 			}
 
-			trans_coord = (1.0f / trans_coord[2]) * trans_coord; //normalize homogeneous coordinate
+			trans_coord = (1.0 / trans_coord[2]) * trans_coord; //normalize homogeneous coordinate
 
 
 			out[i][j] = bicubic_interp(trans_coord[0], trans_coord[1]);
@@ -1045,29 +1045,29 @@ Image Image::affine_transform(const Matrix<float>& trans) const //implement inve
 	return out;
 }
 
-Image Image::translate(float dx, float dy) const
+Image Image::translate(double dx, double dy) const
 {
-	Matrix<float> trans = Matrix<float>::translate_2d(dx, dy);
+	Matrix<double> trans = Matrix<double>::translate_2d(dx, dy);
 	return affine_transform(trans);
 }
 
-Image Image::rotate(float angle) const
+Image Image::rotate(double angle) const
 {
-	Matrix<float> move = Matrix<float>::translate_2d(-_width / 2, -_height / 2);
-	Matrix<float> rot = Matrix<float>::rotate_2d(angle);
-	Matrix<float> move_back = Matrix<float>::translate_2d(_width / 2, _height / 2);
+	Matrix<double> move = Matrix<double>::translate_2d(-_width / 2, -_height / 2);
+	Matrix<double> rot = Matrix<double>::rotate_2d(angle);
+	Matrix<double> move_back = Matrix<double>::translate_2d(_width / 2, _height / 2);
 
-	Matrix<float> trans = move_back * rot * move;
+	Matrix<double> trans = move_back * rot * move;
 	return affine_transform(trans);
 }
 
-Image Image::scale(float sx, float sy) const
+Image Image::scale(double sx, double sy) const
 {
-	Matrix<float> move = Matrix<float>::translate_2d(-_width / 2, -_height / 2);
-	Matrix<float> rot = Matrix<float>::scale_2d(sx, sy);
-	Matrix<float> move_back = Matrix<float>::translate_2d(_width / 2, _height / 2);
+	Matrix<double> move = Matrix<double>::translate_2d(-_width / 2, -_height / 2);
+	Matrix<double> rot = Matrix<double>::scale_2d(sx, sy);
+	Matrix<double> move_back = Matrix<double>::translate_2d(_width / 2, _height / 2);
 
-	Matrix<float> trans = move_back * rot * move;
+	Matrix<double> trans = move_back * rot * move;
 
 	return affine_transform(trans);
 }

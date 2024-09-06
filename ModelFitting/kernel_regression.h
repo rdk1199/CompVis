@@ -9,8 +9,8 @@ class ExactKernelRegression
 private:
 
 	int n_pts; //number of data points being interpolated
-	float (*basis)(float, float);
-	float _falloff; //basis function falloff parameter "c"
+	double (*basis)(double, double);
+	double _falloff; //basis function falloff parameter "c"
 
 	//input data points : vectors will have same length -  x in domain_pts[i], f(x) in values[i] 
 	std::vector<S> in_data;
@@ -20,7 +20,7 @@ private:
 
 public:
 
-	ExactKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float falloff, float(*basis_func)(float, float)); //constructor computes weights based off given data
+	ExactKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, double falloff, double(*basis_func)(double, double)); //constructor computes weights based off given data
 	T operator()(const S& x) const; //evaluates regression function at given input x
 
 };
@@ -31,9 +31,9 @@ class RidgeKernelRegression
 private:
 
 	int n_pts; 
-	float (*basis)(float, float);
-	float _falloff;
-	float _lambda;
+	double (*basis)(double, double);
+	double _falloff;
+	double _lambda;
 
 	std::vector<S> in_data;
 	std::vector<T> out_data;
@@ -42,7 +42,7 @@ private:
 
 public:
 	
-	RidgeKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float lambda, float falloff, float(*basis_func)(float, float));
+	RidgeKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, double lambda, double falloff, double(*basis_func)(double, double));
 	T operator()(const S& x) const;
 
 };
@@ -52,8 +52,8 @@ class NWKernelRegression //Nadaraya-Watson
 {
 	private:
 		int n_pts;
-		float (*basis)(float, float);
-		float _falloff;
+		double (*basis)(double, double);
+		double _falloff;
 
 		std::vector<S> in_data;
 		std::vector<T> out_data;
@@ -61,7 +61,7 @@ class NWKernelRegression //Nadaraya-Watson
 		
 
 	public:
-		NWKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, float falloff, float(*basis_func)(float, float)); //constructor computes weights based off given data
+		NWKernelRegression(std::vector<S> domain_vals, std::vector<T> range_vals, double falloff, double(*basis_func)(double, double)); //constructor computes weights based off given data
 		T operator()(const S& x) const; //evaluates regression function at given input x
 
 };

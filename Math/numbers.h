@@ -11,31 +11,31 @@
 
 struct complex
 {
-	float re = 0.0f;
-	float im = 0.0f;
+	double re = 0.0f;
+	double im = 0.0f;
 
 	complex() :
 		re(0.0f),
 		im(0.0f)
 	{}
 
-	complex(float real, float imag) :
+	complex(double real, double imag) :
 		re(real),
 		im(imag)
 	{}
 
-	complex(float real) :
+	complex(double real) :
 		re(real),
 		im(0.0f)
 	{}
 
 	complex conjugate() const { return { re, -im }; }
-	float sq_modulus() const { return re * re + im * im; }
-	float modulus() const { return sqrt(re * re + im * im); }
-	float real() const { return re; }
-	float imag() const { return im; }
+	double sq_modulus() const { return re * re + im * im; }
+	double modulus() const { return sqrt(re * re + im * im); }
+	double real() const { return re; }
+	double imag() const { return im; }
 
-	float operator=(float b) { re = b; im = 0.0f; return b; }
+	double operator=(double b) { re = b; im = 0.0f; return b; }
 
 };
 
@@ -84,12 +84,12 @@ inline complex operator*=(complex& a, const complex& b)
 	return a;
 }
 
-inline complex operator*(const float& a, const complex& b)
+inline complex operator*(const double& a, const complex& b)
 {
 	return { a * b.re, a * b.im };
 }
 
-inline complex operator*(const complex& a, const float& b)
+inline complex operator*(const complex& a, const double& b)
 {
 	return b * a;
 }
@@ -105,7 +105,7 @@ inline complex operator/=(complex& a, const complex& b)
 	return a;
 }
 
-inline complex operator/(const complex& a, const float& b)
+inline complex operator/(const complex& a, const double& b)
 {
 	return (1.0f / b) * a;
 }
@@ -121,7 +121,7 @@ inline bool operator!=(const complex& a, const complex& b)
 }
 
 /*
-inline complex operator=(complex& a, const float& b)
+inline complex operator=(complex& a, const double& b)
 {
 	a.re = b;
 	a.im = b;

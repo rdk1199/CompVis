@@ -483,9 +483,9 @@ void Matrix<T>::add_multiple_of_row(int r_dest, int r_src, T mult)
 
 
 template<class T>
-Matrix<float> Matrix<T>::translate_2d(float dx, float dy)
+Matrix<double> Matrix<T>::translate_2d(double dx, double dy)
 {
-	Matrix<float> out = Matrix<float>::identity(3);
+	Matrix<double> out = Matrix<double>::identity(3);
 
 	out[0][2] = dx;
 	out[1][2] = dy;
@@ -494,14 +494,14 @@ Matrix<float> Matrix<T>::translate_2d(float dx, float dy)
 }
 
 template<class T>
-Matrix<float> Matrix<T>::rotate_2d(float angle)
+Matrix<double> Matrix<T>::rotate_2d(double angle)
 {
 	angle *= DEG2RAD; //convert to radians
 
-	float cos = std::cos(angle);
-	float sin = std::sin(angle);
+	double cos = std::cos(angle);
+	double sin = std::sin(angle);
 
-	Matrix<float> out(3, 3);
+	Matrix<double> out(3, 3);
 
 	out[0][0] = cos;
 	out[0][1] = -sin;
@@ -513,9 +513,9 @@ Matrix<float> Matrix<T>::rotate_2d(float angle)
 }
 
 template<class T>
-Matrix<float> Matrix<T>::scale_2d(float sx, float sy)
+Matrix<double> Matrix<T>::scale_2d(double sx, double sy)
 {
-	Matrix<float> out = Matrix<float>::identity(3);
+	Matrix<double> out = Matrix<double>::identity(3);
 
 	out[0][0] = sx;
 	out[1][1] = sy;
@@ -524,40 +524,40 @@ Matrix<float> Matrix<T>::scale_2d(float sx, float sy)
 }
 
 //vector operations
-template std::vector<float> operator+<float>(const std::vector<float>& a, const std::vector<float>& b);
+template std::vector<double> operator+<double>(const std::vector<double>& a, const std::vector<double>& b);
 template std::vector<complex> operator+<complex>(const std::vector<complex>& a, const std::vector<complex>& b);
 
-template std::vector<float> operator-(const std::vector<float>& a, const std::vector<float>& b);
+template std::vector<double> operator-(const std::vector<double>& a, const std::vector<double>& b);
 template std::vector<complex> operator-(const std::vector<complex>& a, const std::vector<complex>& b);
 
-template float operator*<float>(const std::vector<float>& a, const std::vector<float>& b);
+template double operator*<double>(const std::vector<double>& a, const std::vector<double>& b);
 template complex operator*<complex>(const std::vector<complex>& a, const std::vector<complex>& b);
 
 //scalar multiplication
-template std::vector<float> operator*(const float& c, const std::vector<float>& v);
+template std::vector<double> operator*(const double& c, const std::vector<double>& v);
 template std::vector<complex> operator*(const complex& c, const std::vector<complex>& v);
-template std::vector<complex> operator*(const float& c, const std::vector<complex>& v);
+template std::vector<complex> operator*(const double& c, const std::vector<complex>& v);
 
-std::ostream& operator<<(std::ostream& stream, const std::vector<float>& v);
+std::ostream& operator<<(std::ostream& stream, const std::vector<double>& v);
 std::ostream& operator<<(std::ostream& stream, const std::vector<complex>& v);
 
 
-template class Matrix<float>;
-template class Matrix<complex>;
 template class Matrix<double>;
+template class Matrix<complex>;
+template class Matrix<float>;
 
 //matrix operations
-template Matrix<float> operator+(const Matrix<float>& A, const Matrix<float>& B);
+template Matrix<double> operator+(const Matrix<double>& A, const Matrix<double>& B);
 template Matrix<complex> operator+(const Matrix<complex>& A, const Matrix<complex>& B);
 
-template Matrix<float> operator*(const Matrix<float>& A, const Matrix<float>& B);
-template Matrix<complex> operator*(const Matrix<complex>& A, const Matrix<complex>& B);
 template Matrix<double> operator*(const Matrix<double>& A, const Matrix<double>& B);
+template Matrix<complex> operator*(const Matrix<complex>& A, const Matrix<complex>& B);
+template Matrix<float> operator*(const Matrix<float> & A, const Matrix<float>& B);
 
-template Matrix<float> operator*(const float& c, const Matrix<float>& A);
+template Matrix<double> operator*(const double& c, const Matrix<double>& A);
 template Matrix<complex> operator*(const complex& c, const Matrix<complex>& A);
 
-template std::vector<float> operator*(const Matrix<float>& A, const std::vector<float>& x);
+template std::vector<double> operator*(const Matrix<double>& A, const std::vector<double>& x);
 template std::vector<complex> operator*(const Matrix<complex>& A, const std::vector<complex>& x);
 
 

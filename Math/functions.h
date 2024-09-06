@@ -2,10 +2,10 @@
 
 #include <cmath>
 
-inline float bicubic_spline(float x, float a = -1)
+inline double bicubic_spline(double x, double a = -1)
 {
-	float out;
-	float abs_x = std::abs(x);
+	double out;
+	double abs_x = std::abs(x);
 
 	if (abs_x < 1.0f)
 	{
@@ -25,31 +25,31 @@ inline float bicubic_spline(float x, float a = -1)
 	return out;
 }
 
-inline float bicubic_spline_2d(float x, float y, float a = -1)
+inline double bicubic_spline_2d(double x, double y, double a = -1)
 {
 	return bicubic_spline(x, a) * bicubic_spline(y, a);
 }
 
 template<class T>
-inline T gaussian_basis(T r, float c)
+inline T gaussian_basis(T r, double c)
 {
 	return std::exp(-(r * r) / (c * c));
 }
 
 template<class T>
-inline T hardy_mq(T r, float c)
+inline T hardy_mq(T r, double c)
 {
 	return std::sqrt(r * r + c * c);
 }
 
 template<class T>
-inline T inv_mq(T r, float c)
+inline T inv_mq(T r, double c)
 {
 	return 1 / hardy_mq(r, c);
 }
 
 template<class T>
-inline T tp_spline(T r, float c)
+inline T tp_spline(T r, double c)
 {
 	return r * r * std::log(r);
 }

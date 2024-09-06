@@ -12,7 +12,7 @@ private:
 	int g_width;
 	int g_height;
 
-	float lambda;
+	double lambda;
 
 	int n_pts;
 	std::vector<std::pair<int, int>> in_data; //data points on the grid
@@ -22,6 +22,6 @@ private:
 
 public:
 
-	DEMinimizer(int width, int height, std::vector<std::pair<int, int>> domain, std::vector<T> range, float reg);
+	DEMinimizer(int width, int height, std::vector<std::pair<int, int>> domain, std::vector<T> range, double reg);
 	T operator()(int i , int j) const;
 };

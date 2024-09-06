@@ -82,13 +82,13 @@ inline std::vector<T> operator*(const S& c, const std::vector<T>& v)
 }
 
 template<class T>
-inline float abs(const std::vector<T>& v) //magnitude
+inline double abs(const std::vector<T>& v) //magnitude
 {
 	return std::sqrt(v * v);
 }
 
 template<class T>
-inline float p_norm(const std::vector<T>& v, float p = 0)
+inline double p_norm(const std::vector<T>& v, double p = 0)
 {
 	if (v.size() == 0)
 	{
@@ -97,7 +97,7 @@ inline float p_norm(const std::vector<T>& v, float p = 0)
 
 	if (p == 0) //infinity norm
 	{
-		float abs_max = abs(v[0]);
+		double abs_max = abs(v[0]);
 
 		for (int i = 1; i < v.size(); i++)
 		{
@@ -110,7 +110,7 @@ inline float p_norm(const std::vector<T>& v, float p = 0)
 		return abs_max;
 	}
 
-	float sum = 0.0f;
+	double sum = 0.0f;
 	for (int i = 0; i < v.size(); i++)
 	{
 		sum += std::pow(abs(v[i]), p);
@@ -195,9 +195,9 @@ public:
 	Matrix<T> inverse() const;
 
 	//2D transformation matrices (homogeneous coordinates, so return 3x3 matrix)
-	static Matrix<float> translate_2d(float dx, float dy);
-	static Matrix<float> rotate_2d(float angle); //angle in degrees
-	static Matrix<float> scale_2d(float sx, float sy);
+	static Matrix<double> translate_2d(double dx, double dy);
+	static Matrix<double> rotate_2d(double angle); //angle in degrees
+	static Matrix<double> scale_2d(double sx, double sy);
 
 
 };
