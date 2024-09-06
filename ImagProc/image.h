@@ -58,6 +58,13 @@ inline Color operator-(const Color& a, const Color& b)
 	return { a.r - b.r, a.g - b.g, a.b - b.b, a.a - b.a };
 }
 
+
+inline Color operator-=(Color& a, const Color& b)
+{
+	a = a - b;
+	return a;
+}
+
 inline Color operator*(const Color& a, const Color& b)
 {
 	return { a.r * b.r, a.g * b.g, a.b * b.b, a.a * b.a };

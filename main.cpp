@@ -315,8 +315,8 @@ for (int i = 0; i < corner_size + 1; i++)
 
 small_col_corner.save("Images/corner_orig.png");
 demin_interp.save("Images/corner_demin.png");
-
 */
+
 
 //bird_sample.save("Images/bird_sample.png");
 //bird_regress.save("Images/bird_regress.png");
