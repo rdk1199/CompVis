@@ -26,9 +26,8 @@ DEMinimizer<T>::DEMinimizer(int width, int height, std::vector<std::pair<int,int
 		exit(1);
 	}
 
-	SparseMatrix<float> hessian(width * height, width * height);
+	SparseMatrix<double> hessian(width * height, width * height);
 	vector<T> w_data(width * height);
-
 
 	for (int i = 0; i < width; i++)
 	{
@@ -39,7 +38,7 @@ DEMinimizer<T>::DEMinimizer(int width, int height, std::vector<std::pair<int,int
 			int px_ij1 = (j + 1) * width + i;
 			int px_i1j = j * width + i + 1;
 
-			hessian[px_ij][px_ij] = 1 + 2 * lambda;
+			hessian[px_ij][px_ij] = 2 * lambda;
 
 			if (hessian.in_range(px_i1j, px_i1j))
 			{
@@ -55,14 +54,26 @@ DEMinimizer<T>::DEMinimizer(int width, int height, std::vector<std::pair<int,int
 		}		
 	}
 
+	double c = 1;
 
 	for (int i = 0; i < domain.size(); i++)
 	{
-		int px_index = height * in_data[i].first + in_data[i].second;
-		w_data[px_index] = out_data[i];
+		int px_index = in_data[i].second * width + in_data[i].first;
+		w_data[px_index] = c * out_data[i];
+		hessian[px_index][px_index] += c; //add c_ij
 	}
 
-	f_vec = gauss_seidel_solve(hessian, w_data, .001);
+//	cout << "determinant: " << hessian.det() << endl;
+
+	f_vec = gauss_seidel_solve(hessian, w_data);
+		
+	//	gauss_solve(hessian, w_data);
+	//vector<double> r_vec = gauss_solve(hessian, r_data);
+
+//	cout << hessian * f_vec - w_data << endl;
+	//cout << p_norm(hessian * f_vec - w_data) << endl;
+
+	//cout <<  hessian.inverse();
 }
 
 template<class T>

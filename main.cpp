@@ -4,12 +4,11 @@
 #include "Math/linalg.h"
 #include "Math/functions.h"
 #include "Math/sparse.h"
-
+#include "Math/math_tests.h"
 
 #include "ImagProc/image.h"
 
 #include "ModelFitting/kernel_regression.h"
-
 #include "ModelFitting/demin.h"
 
 using std::cout;
@@ -215,7 +214,6 @@ orig.save("Images/regression_orig.png");
 nw_interp.save("Images/regression_nw_interp.png");
 */
 
-
 Image bird_sample(bird.width(), bird.height(), Color::black());
 
 vector<std::pair<int, int>> bird_in_int;
@@ -273,8 +271,8 @@ for (int i = 0; i < bird.width(); i++)
 		bird_nw_regress[i][j].a = 255.0f;
 	}
 }*/
-
-DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 100);
+/*
+DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 1);
 
 Image bird_demin_img(bird.width(), bird.height());
 
@@ -290,23 +288,24 @@ for (int i = 0; i < bird.width(); i++)
 }
 
 bird_demin_img.save("Images/bird_demin.png");
+*/
 
-/*
-vector<std::pair<int, int>> in = { {0, 0}, {0, 20}, {20, 0}, {20, 20} };
+int corner_size = 5;
+vector<std::pair<int, int>> in = { {0, 0}, {0, corner_size}, {corner_size, 0}, {corner_size, corner_size} };
 vector<Color> out = { Color::black(), Color::red(), Color::green(), Color::blue() };
 
-Image small_col_corner(21, 21, Color::black());
+Image small_col_corner(corner_size + 1, corner_size + 1, Color::black());
 small_col_corner[0][0] = { 0.0, 0.0, 0.0, 255.0 };
-small_col_corner[0][20] = { 255.0, 0.0, 0.0, 255.0 };
-small_col_corner[20][0] = { 0.0, 255.0, 0.0, 255.0 };
-small_col_corner[20][20] = { 0.0, 0.0, 255.0, 255.0 };
+small_col_corner[0][corner_size] = { 255.0, 0.0, 0.0, 255.0 };
+small_col_corner[corner_size][0] = { 0.0, 255.0, 0.0, 255.0 };
+small_col_corner[corner_size][corner_size] = { 0.0, 0.0, 255.0, 255.0 };
 
-DEMinimizer<Color> demin(21, 21, in, out, 1.0f);
-Image demin_interp(21, 21);
+DEMinimizer<Color> demin(corner_size + 1, corner_size + 1, in, out, 0.5f);
+Image demin_interp(corner_size + 1, corner_size + 1);
 
-for (int i = 0; i < 21; i++)
+for (int i = 0; i < corner_size + 1; i++)
 {
-	for (int j = 0; j <21; j++)
+	for (int j = 0; j < corner_size + 1; j++)
 	{
 		demin_interp[i][j] = demin( i,j );
 	}
@@ -315,28 +314,20 @@ for (int i = 0; i < 21; i++)
 
 small_col_corner.save("Images/corner_orig.png");
 demin_interp.save("Images/corner_demin.png");
-*/
 
 
-bird_sample.save("Images/bird_sample.png");
+
+//bird_sample.save("Images/bird_sample.png");
 //bird_regress.save("Images/bird_regress.png");
 //bird_ridge_regress.save("Images/bird_ridge_regress.png");
 //bird_nw_regress.save("Images/bird_nw_regress.png");
 
 
-SparseMatrix<float> s_mat(2000, 2000);
-SparseMatrix<float> t_mat(2000, 2000);
-
-for (int i = 0; i < 2000; i++)
-{
-	s_mat[i][i] = i;
-	t_mat[i][i] = 2000 - i - 1;
-}
-
-SparseMatrix<float> sum_mat = s_mat + t_mat;
-
 //cout << sum_mat[400][400] << endl;
 //cout << sum_mat[399][400] << endl;
+
+//test_gauss_elimination();
+//test_gauss_seidel();
 
 	return 0;
 }

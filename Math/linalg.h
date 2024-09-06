@@ -13,16 +13,73 @@ class IllegalVectorOp : public std::exception
 };
 
 template<class T>
-std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b);
+inline std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b)
+{
+	if (a.size() != b.size())
+	{
+		throw IllegalVectorOp();
+	}
+
+	std::vector<T> out;
+
+	for (int i = 0; i < a.size(); i++)
+	{
+		out.push_back(a[i] + b[i]);
+	}
+
+	return out;
+}
+
 
 template<class T>
-std::vector<T> operator-(const std::vector<T>& a, const std::vector<T>& b);
+inline std::vector<T> operator-(const std::vector<T>& a, const std::vector<T>& b)
+{
+	if (a.size() != b.size())
+	{
+		throw IllegalVectorOp();
+	}
+
+	std::vector<T> out;
+
+	for (int i = 0; i < a.size(); i++)
+	{
+		out.push_back(a[i] - b[i]);
+	}
+
+	return out;
+}
+
 
 template<class T>
-T operator*(const std::vector<T>& a, const std::vector<T>& b); //dot product
+inline T operator*(const std::vector<T>& a, const std::vector<T>& b) //dot product
+{
+	if (a.size() != b.size())
+	{
+		throw IllegalVectorOp();
+	}
 
-template<class S, class T>
-std::vector<T> operator*(const S& c, const std::vector<T>& v); //scalar multiplication
+	T out = T{ 0.0f };
+
+	for (int i = 0; i < a.size(); i++)
+	{
+		out += a[i] * b[i];
+	}
+
+	return out;
+}
+
+template<class S, class T> //scalar multiplication
+inline std::vector<T> operator*(const S& c, const std::vector<T>& v)
+{
+	std::vector<T> out;
+
+	for (int i = 0; i < v.size(); i++)
+	{
+		out.push_back(c * v[i]);
+	}
+
+	return out;
+}
 
 template<class T>
 inline float abs(const std::vector<T>& v) //magnitude
@@ -44,13 +101,16 @@ inline float p_norm(const std::vector<T>& v, float p = 0)
 
 		for (int i = 1; i < v.size(); i++)
 		{
-			abs_max = std::max(abs_max, abs(v[i]));
+			if (abs(v[i]) > abs_max) //std::max is causing trouble for some reason
+			{
+				abs_max = abs(v[i]);
+			}
 		}
 
 		return abs_max;
 	}
 
-	float sum;
+	float sum = 0.0f;
 	for (int i = 0; i < v.size(); i++)
 	{
 		sum += std::pow(abs(v[i]), p);
@@ -64,7 +124,7 @@ inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& v)
 {
 	for (int i = 0; i < v.size(); i++)
 	{
-		stream << v[i] << " ";
+		stream << v[i] << ", ";
 	}
 
 	return stream;
@@ -163,7 +223,8 @@ inline std::vector<T> operator*(const Matrix<S>& A, const std::vector<T>& x)
 
 	for (int i = 0; i < product.size(); i++)
 	{
-		product[i] = A.at(i, 0) * x[0];
+		product[i] = A.at(i, 0) * x[0]; //can't necessarily initialize to 0, so initialize to first term here instead
+
 		for (int j = 1; j < x.size(); j++)
 		{
 			product[i] = product[i] + A.at(i, j) * x[j];

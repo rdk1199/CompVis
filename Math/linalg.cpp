@@ -8,74 +8,7 @@ using std::vector;
 using std::cout;
 using std::endl;
 
-template<class T>
-std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b)
-{
-	if (a.size() != b.size())
-	{
-		throw IllegalVectorOp();
-	}
 
-	vector<T> out;
-
-	for (int i = 0; i < a.size(); i++)
-	{
-		out.push_back(a[i] + b[i]);
-	}
-
-	return out;
-}
-
-
-template<class T>
-std::vector<T> operator-(const std::vector<T>& a, const std::vector<T>& b)
-{
-	if (a.size() != b.size())
-	{
-		throw IllegalVectorOp();
-	}
-
-	vector<T> out;
-
-	for (int i = 0; i < a.size(); i++)
-	{
-		out.push_back(a[i] - b[i]);
-	}
-
-	return out;
-}
-
-
-template<class T>
-T operator*(const std::vector<T>& a, const std::vector<T>& b) //dot product
-{
-	if (a.size() != b.size())
-	{
-		throw IllegalVectorOp();
-	}
-
-	T out = T{ 0.0f };
-
-	for (int i = 0; i < a.size(); i++)
-	{
-		out += a[i] * b[i];
-	}
-
-	return out;
-}
-
-template<class S, class T> //scalar multiplication
-std::vector<T> operator*(const S& c, const std::vector<T>& v)
-{
-	vector<T> out;
-
-	for (int i = 0; i < v.size(); i++)
-	{
-		out.push_back(c*v[i]);
-	}
-
-	return out;
-}
 
 template<class T>
 Matrix<T>::Matrix(int rows, int columns) :
@@ -611,6 +544,7 @@ std::ostream& operator<<(std::ostream& stream, const std::vector<complex>& v);
 
 template class Matrix<float>;
 template class Matrix<complex>;
+template class Matrix<double>;
 
 //matrix operations
 template Matrix<float> operator+(const Matrix<float>& A, const Matrix<float>& B);
@@ -618,6 +552,7 @@ template Matrix<complex> operator+(const Matrix<complex>& A, const Matrix<comple
 
 template Matrix<float> operator*(const Matrix<float>& A, const Matrix<float>& B);
 template Matrix<complex> operator*(const Matrix<complex>& A, const Matrix<complex>& B);
+template Matrix<double> operator*(const Matrix<double>& A, const Matrix<double>& B);
 
 template Matrix<float> operator*(const float& c, const Matrix<float>& A);
 template Matrix<complex> operator*(const complex& c, const Matrix<complex>& A);
@@ -628,3 +563,4 @@ template std::vector<complex> operator*(const Matrix<complex>& A, const std::vec
 
 template std::ostream& operator<<(std::ostream& os, const Matrix<float>& matrix);
 template std::ostream& operator<<(std::ostream& os, const Matrix<complex>& matrix);
+template std::ostream& operator<<(std::ostream& os, const Matrix<double>& matrix);

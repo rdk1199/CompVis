@@ -42,7 +42,6 @@ inline std::vector<T> gauss_solve(const Matrix<S>& A, std::vector<T> b) //solve 
 	int r = 0;
 	int c = 0;
 
-
 	while (r < A.n_rows() && c < A.n_cols())
 	{
 		int i_max = r;
@@ -96,7 +95,7 @@ inline std::vector<T> gauss_solve(const Matrix<S>& A, std::vector<T> b) //solve 
 
 
 template<class S, class T>
-inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T> b, float err, int max_iter = 25) //apply Gauss-Seidel iteration to solve Ax = b -> assumes A satisfies convergence conditions
+inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T> b, float err = 1e-4, int max_iter = 25) //apply Gauss-Seidel iteration to solve Ax = b -> assumes A satisfies convergence conditions, so be careful
 {
 	std::vector<T> soln(A.n_rows());
 
@@ -118,8 +117,6 @@ inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T
 
 			soln[i] = soln[i] / A.at(i, i);
 		}
-
-		iter++;
 	}	
 
 	return soln;

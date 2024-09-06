@@ -11,8 +11,8 @@ struct Color
 {
 	float r = 0, g = 0, b = 0, a = 0;
 
-	float sq_mag() { return (r * r + g * g + b * b + a * a)/(255.0f * 255.0f); } //magnitude of RGBA values in 0-1 scale
-	float mag() { return std::sqrt(sq_mag()); }
+	float sq_mag() const { return (r * r + g * g + b * b + a * a); } //magnitude of RGBA values in 0-1 scale
+	float mag() const { return std::sqrt(sq_mag()); }
 	Color invert() const { return { 255.0 - r, 255.0 - g, 255.0 - b, a }; }
 	Color abs() const { return { std::abs(r), std::abs(g), std::abs(b), std::abs(a) }; }
 
@@ -27,17 +27,17 @@ struct Color
 
 inline Color operator+(const Color& a, const Color& b)
 {
-	return { a.r + b.r, a.g + b.g, a.b + b.b, std::max(a.a , b.a) };
+	return { a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a };
 }
 
 inline Color operator+(const Color& a, float b)
 {
-	return { a.r + b, a.g + b, a.b + b, a.a};
+	return { a.r + b, a.g + b, a.b + b, a.a + b};
 }
 
 inline Color operator+(float b, const Color& a)
 {
-	return { a.r + b, a.g + b, a.b + b, a.a};
+	return a + b;
 }
 
 inline Color operator+=(Color& a, const Color& b)
@@ -55,7 +55,7 @@ inline Color operator+=(Color& a, float b)
 
 inline Color operator-(const Color& a, const Color& b)
 {
-	return { a.r - b.r, a.g - b.g, a.b - b.b, std::min(a.a, b.a) };
+	return { a.r - b.r, a.g - b.g, a.b - b.b, a.a- b.a };
 }
 
 inline Color operator*(const Color& a, const Color& b)
@@ -80,10 +80,14 @@ inline Color operator*(float b, const Color& a)
 
 inline Color operator*(const Color& a, float b)
 {
-	return { a.r * b, a.g * b, a.b * b, a.a};
+	return b * a;
 }
 
 
+inline float abs(const Color& a)
+{
+	return a.mag();
+}
 
 
 inline Color operator*=(Color& a, const Color& b)
