@@ -99,7 +99,7 @@ inline SparseMatrix<T> operator-(const SparseMatrix<T>& A, const SparseMatrix<T>
 
 template<class T> SparseMatrix<T> operator*(const T& c, const SparseMatrix<T>& A)
 {
-	SparseMatrix<T> prod;
+	SparseMatrix<T> prod(A.n_rows(), A.n_cols());
 
 	for (int i = 0; i < A.n_rows(); i++)
 	{

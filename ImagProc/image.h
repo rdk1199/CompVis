@@ -185,7 +185,8 @@ public:
 	*/
 
 	static Image blend(const Image& im1, const Image& im2, double alpha);
-	
+	static Image abs_diff(const Image& im1, const Image& im2); 
+
 	//image stats
 	std::vector<ImgHistEntry> histogram() const;
 	std::vector<ImgHistEntry> cum_dist() const; //normalized cumulative distribution function

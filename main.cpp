@@ -5,6 +5,7 @@
 #include "Math/functions.h"
 #include "Math/sparse.h"
 #include "Math/math_tests.h"
+#include "Math/rand_util.h"
 
 #include "ImagProc/image.h"
 
@@ -18,7 +19,8 @@ using std::vector;
 
 int main()
 {
-	
+	rand_init(time(0));
+
 	vector<complex> t1 = { complex{4.0, -1.0}, complex{1.5, -3.5} };
 	vector<complex> t2 = { complex{-.75, 2.3}, complex{-8, .9} };
 
@@ -220,14 +222,17 @@ vector<std::pair<int, int>> bird_in_int;
 vector<vector<float>> bird_in;
 vector<Color> bird_out;
 
-for (int i = 0; i < bird_sample.width(); i += 100)
+for (int i = 0; i < bird_sample.width(); i += 1)
 {
-	for (int j = 0; j < bird_sample.height(); j += 100)
+	for (int j = 0; j < bird_sample.height(); j += 1)
 	{
-		bird_sample[i][j] = bird[i][j];
-		bird_in.push_back({ i,j });
-		bird_in_int.push_back({ i,j });
-		bird_out.push_back(bird[i][j]);
+		if (g_rand.flip(.1f))
+		{
+			bird_sample[i][j] = bird[i][j];
+			bird_in.push_back({ i,j });
+			bird_in_int.push_back({ i,j });
+			bird_out.push_back(bird[i][j]);
+		}
 	}
 }
 
@@ -272,7 +277,7 @@ for (int i = 0; i < bird.width(); i++)
 	}
 }*/
 
-DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 1);
+DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 3, 1, EnergyFunction::thin_plate);
 
 Image bird_demin_img(bird.width(), bird.height());
 
@@ -283,14 +288,16 @@ for (int i = 0; i < bird.width(); i++)
 	for (int j = 0; j < bird.height(); j++)
 	{
 		bird_demin_img[i][j] = bird_demin(i, j);
-		bird_demin_img[i][j].a = 255.0f;
+		//bird_demin_img[i][j].a = 255.0f;
 	}
 }
 
-bird_demin_img.save("Images/bird_demin.png");
+bird_demin_img.save("Images/bird_demin_low_c.png");
+
+Image::abs_diff(bird, bird_demin_img).save("Images/bird_demin_diff.png");
 
 /*
-int corner_size = 1000;
+int corner_size = 7;
 vector<std::pair<int, int>> in = { {0, 0}, {0, corner_size}, {corner_size, 0}, {corner_size, corner_size} };
 vector<Color> out = { Color::black(), Color::red(), Color::green(), Color::blue() };
 
@@ -300,7 +307,7 @@ small_col_corner[0][corner_size] = { 255.0, 0.0, 0.0, 255.0 };
 small_col_corner[corner_size][0] = { 0.0, 255.0, 0.0, 255.0 };
 small_col_corner[corner_size][corner_size] = { 0.0, 0.0, 255.0, 255.0 };
 
-DEMinimizer<Color> demin(corner_size + 1, corner_size + 1, in, out, 1);
+DEMinimizer<Color> demin(corner_size + 1, corner_size + 1, in, out, 1, 1, EnergyFunction::thin_plate);
 Image demin_interp(corner_size + 1, corner_size + 1);
 
 for (int i = 0; i < corner_size + 1; i++)
@@ -308,7 +315,7 @@ for (int i = 0; i < corner_size + 1; i++)
 	for (int j = 0; j < corner_size + 1; j++)
 	{
 		demin_interp[i][j] = demin( i,j );
-		demin_interp[i][j].a = 255.0;
+		//demin_interp[i][j].a = 255.0;
 	}
 }
 
@@ -317,8 +324,7 @@ small_col_corner.save("Images/corner_orig.png");
 demin_interp.save("Images/corner_demin.png");
 */
 
-
-//bird_sample.save("Images/bird_sample.png");
+bird_sample.save("Images/bird_sample.png");
 //bird_regress.save("Images/bird_regress.png");
 //bird_ridge_regress.save("Images/bird_ridge_regress.png");
 //bird_nw_regress.save("Images/bird_nw_regress.png");

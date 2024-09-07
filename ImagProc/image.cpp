@@ -229,6 +229,13 @@ Image Image::blend(const Image& im1, const Image& im2, double alpha)
 	return alpha * im1 + (1.0 - alpha) * im2;
 }
 
+Image Image::abs_diff(const Image& im1, const Image& im2)
+{
+	Image diff = im1 - im2;
+	diff.abs();
+	return diff;
+}
+
 void Image::abs()
 {
 	for (int i = 0; i < _width; i++)
