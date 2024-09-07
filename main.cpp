@@ -277,7 +277,7 @@ for (int i = 0; i < bird.width(); i++)
 	}
 }*/
 
-DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 3, 1, EnergyFunction::thin_plate);
+DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 1, 4, EnergyFunction::thin_plate, .1, 1000);
 
 Image bird_demin_img(bird.width(), bird.height());
 

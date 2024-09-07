@@ -31,6 +31,10 @@ public:
 	std::map<int, T>& operator[](int i){ return vals[i]; }
 	const std::vector<std::map<int, T>>& values() const { return vals; }
 
+	// compute the sassenfeld constant of the matrix - for error computation in Gauss-Seidel - assumes nonzero diagonal!
+	double sassenfeld() const;
+
+
 	SparseMatrix(int r, int c) : rows(r), cols(c), vals(std::vector<std::map<int, T>>(r)) {}; //r rows, c cols //zero matrix
 };
 

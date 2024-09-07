@@ -12,7 +12,7 @@ using std::cout;
 using std::endl;
 
 template<class T>
-void DEMinimizer<T>::construct_membrane_f_vec()
+void DEMinimizer<T>::construct_membrane_f_vec(double tol, int max_iter)
 {
 	SparseMatrix<double> hessian(g_width * g_height, g_width * g_height);
 	vector<T> w_data(g_width * g_height);
@@ -53,11 +53,11 @@ void DEMinimizer<T>::construct_membrane_f_vec()
 		hessian[px_index][px_index] += constraint; //add c_ij
 	}
 
-	f_vec = gauss_seidel_solve(hessian, w_data);
+	f_vec = gauss_seidel_solve(hessian, w_data, tol, max_iter);
 }
 
 template<class T>
-void DEMinimizer<T>::construct_thin_plate_f_vec()
+void DEMinimizer<T>::construct_thin_plate_f_vec(double tol, int max_iter)
 {
 	SparseMatrix<double> hessian(g_width * g_height, g_width * g_height);
 	vector<T> w_data(g_width * g_height);
@@ -166,13 +166,11 @@ void DEMinimizer<T>::construct_thin_plate_f_vec()
 		hessian[px_index][px_index] += constraint; //add c_ij
 	}
 
-	f_vec = gauss_seidel_solve(hessian, w_data);
-
-	cout << p_norm(hessian * f_vec - w_data) << endl;
+	f_vec = gauss_seidel_solve(hessian, w_data, tol, max_iter);
 }
 
 template<class T>
-DEMinimizer<T>::DEMinimizer(int width, int height, std::vector<std::pair<int,int>> domain, std::vector<T> range, double reg, double force_fit, EnergyFunction e_func):
+DEMinimizer<T>::DEMinimizer(int width, int height, std::vector<std::pair<int,int>> domain, std::vector<T> range, double reg, double force_fit, EnergyFunction e_func, double tol, int max_iter):
 	g_width(width),
 	g_height(height),
 	in_data(domain),
@@ -191,9 +189,9 @@ DEMinimizer<T>::DEMinimizer(int width, int height, std::vector<std::pair<int,int
 	switch (e_func)
 	{
 	case EnergyFunction::membrane:
-			construct_membrane_f_vec();
+			construct_membrane_f_vec(tol, max_iter);
 	case EnergyFunction::thin_plate:
-		construct_thin_plate_f_vec();
+		construct_thin_plate_f_vec(tol, max_iter);
 	}
 }
 

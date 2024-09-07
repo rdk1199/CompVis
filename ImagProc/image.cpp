@@ -155,6 +155,17 @@ void Image::gamma_correct(double gamma)
 	}
 }
 
+void Image::solidify()
+{
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			pixels[i][j].a = 255.0;
+		}
+	}
+}
+
 Image operator+(const Image& im1, const Image& im2)
 {
 	if (im1.width() != im2.width() || im1.height() != im2.height())

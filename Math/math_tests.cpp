@@ -34,7 +34,7 @@ void test_gauss_seidel(float epsilon)
 	}
 
 
-	vector<float> x = gauss_seidel_solve(A, b, .001);
+	vector<float> x = gauss_seidel_solve(A, b, .001, 200);
 
 //	vector<float> diff = A * x - b;
 

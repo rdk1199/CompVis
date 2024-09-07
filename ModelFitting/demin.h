@@ -21,14 +21,14 @@ private:
 	std::vector<std::pair<int, int>> in_data; //data points on the grid
 	std::vector<T> out_data;
 
-	void construct_membrane_f_vec();
-	void construct_thin_plate_f_vec();
+	void construct_membrane_f_vec(double tol, int max_iter);
+	void construct_thin_plate_f_vec(double tol, int max_iter);
 
 
 	std::vector<T> f_vec; //function values to be computed (all done on a discrete grid -> laid out in 1D)
 
 public:
 
-	DEMinimizer(int width, int height, std::vector<std::pair<int, int>> domain, std::vector<T> range, double reg, double force_fit, EnergyFunction e_func);
+	DEMinimizer(int width, int height, std::vector<std::pair<int, int>> domain, std::vector<T> range, double reg, double force_fit, EnergyFunction e_func, double tol, int max_iter);
 	T operator()(int i , int j) const;
 };

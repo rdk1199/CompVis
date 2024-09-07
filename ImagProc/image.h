@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 #include "../Math/linalg.h"
 
@@ -93,7 +94,7 @@ inline Color operator*(const Color& a, double b)
 
 inline double abs(const Color& a)
 {
-	return a.mag();
+	return std::max({ abs(a.r), abs(a.g), abs(a.b), abs(a.a) });
 }
 
 
@@ -171,7 +172,7 @@ public:
 	void bias(Color val);
 	void gamma_correct(double gamma);
 	void abs(); //takes absolute value of every color (in case some color values are negative) -> mainly for measuring relative difference between two images
-
+	void solidify(); //sets all alpha channels to max
 
 
 	//padding

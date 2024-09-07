@@ -95,9 +95,11 @@ inline std::vector<T> gauss_solve(const Matrix<S>& A, std::vector<T> b) //solve 
 
 
 template<class S, class T>
-inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T> b, double err = 1e-4, int max_iter = 2000) //apply Gauss-Seidel iteration to solve Ax = b -> assumes A satisfies convergence conditions, so be careful
+inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T> b, double tol, int max_iter) //apply Gauss-Seidel iteration to solve Ax = b -> assumes A satisfies convergence conditions, so be careful
 {
-	std::vector<T> soln(A.n_rows());
+	double err = 1000 * tol; //just set this to something big enough to be "bad"
+
+	std::vector<T> soln(A.n_rows()); //initial guess is zero
 
 	for (int iter = 0; iter < max_iter; iter++)
 	{
@@ -117,7 +119,20 @@ inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T
 
 			soln[i] = soln[i] / A.at(i, i);
 		}
+
+		err = p_norm(A * soln - b);
+		if(err <= tol)
+		{
+			std::cout << "num iterations: " << iter << std::endl;
+			break;
+		}
 	}	
+
+	if (err > tol)
+	{
+		std::cout << "warning: Gauss-Seidel did not converge before max iterations reached; error: " << err << std::endl;
+	}
+
 
 	return soln;
 }
