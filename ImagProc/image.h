@@ -17,12 +17,13 @@ struct Color
 	Color invert() const { return { 255.0 - r, 255.0 - g, 255.0 - b, a }; }
 	Color abs() const { return { std::abs(r), std::abs(g), std::abs(b), std::abs(a) }; }
 
-	static Color white() { return { 255.0f, 255.0f, 255.0f, 255.0f }; }
-	static Color black() { return { 0.0f, 0.0f, 0.0f, 255.0f}; }
-	static Color red() { return { 255.0f, 0.0f, 0.0, 255.0f }; }
-	static Color green() { return { 0.0f, 255.0f, 0.0, 255.0f }; }
-	static Color blue() { return { 0.0f, 0.0f, 255.0, 255.0f }; }
-	static Color gray(double val, double alpha = 255.0f) { return { val, val, val, alpha }; } //make grayscale color with given value and alpha
+	static Color white() { return { 255.0, 255.0, 255.0, 255.0 }; }
+	static Color black() { return { 0.0, 0.0, 0.0f, 255.0}; }
+	static Color red() { return { 255.0, 0.0, 0.0, 255.0 }; }
+	static Color green() { return { 0.0, 255.0, 0.0, 255.0 }; }
+	static Color blue() { return { 0.0, 0.0, 255.0, 255.0 }; }
+	static Color gray(double val, double alpha = 255.0) { return { val, val, val, alpha }; } //make grayscale color with given value and alpha
+	static Color zero() { return { 0.0, 0.0, 0.0, 0.0 }; }
 };
 
 
@@ -92,11 +93,6 @@ inline Color operator*(const Color& a, double b)
 }
 
 
-inline double abs(const Color& a)
-{
-	return std::max({ abs(a.r), abs(a.g), abs(a.b), abs(a.a) });
-}
-
 
 inline Color operator*=(Color& a, const Color& b)
 {
@@ -112,9 +108,16 @@ inline Color operator*=(Color& a, double b)
 
 inline std::ostream& operator<<(std::ostream& stream, const Color& col)
 {
-	stream << col.r << " " << col.g << " " << col.b << " " << col.a;
+	stream << "(" << col.r << ", " << col.g << ", " << col.b << ", " << col.a << ")";
 	return stream;
 }
+
+inline double abs(const Color& col)
+{
+	return std::max({ std::abs(col.r), std::abs(col.g), std::abs(col.b), std::abs(col.a) });;
+}
+
+
 
 Color col_median(std::vector<Color> colors);
 

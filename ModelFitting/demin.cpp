@@ -26,24 +26,26 @@ void DEMinimizer<T>::construct_membrane_f_vec(double tol, int max_iter)
 			int px_ij1 = (j + 1) * g_width + i;
 			int px_i1j = j * g_width + i + 1;
 
-			hessian[px_ij][px_ij] += 2 * lambda;
-
 			if (hessian.in_range(px_i1j, px_i1j))
 			{
-				hessian[px_i1j][px_i1j] += lambda;
-				hessian[px_ij][px_i1j] -= lambda;
-				hessian[px_i1j][px_ij] -= lambda;
+				hessian[px_ij][px_ij] += 1;
+				hessian[px_i1j][px_i1j] += 1;
+				hessian[px_ij][px_i1j] -= 1;
+				hessian[px_i1j][px_ij] -= 1;
 
 			}
 
 			if (hessian.in_range(px_ij1, px_ij1))
 			{
-				hessian[px_ij1][px_ij1] += lambda;
-				hessian[px_ij][px_ij1] -= lambda;
-				hessian[px_ij1][px_ij] -= lambda;
+				hessian[px_ij][px_ij] += 1;
+				hessian[px_ij1][px_ij1] += 1;
+				hessian[px_ij][px_ij1] -= 1;
+				hessian[px_ij1][px_ij] -= 1;
 			}
 		}
 	}
+
+	hessian = lambda * hessian;
 
 	for (int i = 0; i < in_data.size(); i++)
 	{
@@ -53,7 +55,57 @@ void DEMinimizer<T>::construct_membrane_f_vec(double tol, int max_iter)
 		hessian[px_index][px_index] += constraint; //add c_ij
 	}
 
+
+	
+
 	f_vec = gauss_seidel_solve(hessian, w_data, tol, max_iter);
+
+	//f_vec = vector<Color>(g_width * g_height, Color::red());
+
+	/*
+	cout << "total energy:" << f_vec * (hessian * f_vec) - 2 * f_vec * w_data + Color{ 255.0 * 255.0, 0, 0, 255.0 * 255.0 } << endl;
+
+	cout << "smoothness energy: " << f_vec * (hessian * f_vec) - (f_vec[in_data[0].second * g_width + in_data[0].first] * f_vec[in_data[0].second * g_width + in_data[0].first]) << endl;
+	cout << "data energy: " << (f_vec[in_data[0].second * g_width + in_data[0].first] * f_vec[in_data[0].second * g_width + in_data[0].first]) - 2 * f_vec * w_data + Color{ 255.0 * 255.0, 0, 0, 255.0 * 255.0 } << endl;
+	*/
+
+	Color total = Color::zero();
+
+	for (int i = 0; i < g_width; i++)
+	{
+		for (int j = 0; j < g_height; j++)
+		{
+
+			int px_ij = j * g_width + i;
+			int px_ij1 = (j + 1) * g_width + i;
+			int px_i1j = j * g_width + i + 1;
+
+			if (hessian.in_range(px_i1j, px_i1j))
+			{
+				total += (f_vec[px_i1j] - f_vec[px_ij]) * (f_vec[px_i1j] - f_vec[px_ij]);
+
+			}
+
+			if (hessian.in_range(px_ij1, px_ij1))
+			{
+				total += (f_vec[px_ij1] - f_vec[px_ij]) * (f_vec[px_ij1] - f_vec[px_ij]);
+			}
+		}
+	}
+
+	cout << "actual smoothness energy: " << total << endl;
+
+	Color data_total = Color::zero();
+
+	for (int i = 0; i < in_data.size(); i++)
+	{
+		data_total += (f_vec[in_data[0].second * g_width + in_data[0].first] - out_data[0]) * (f_vec[in_data[0].second * g_width + in_data[0].first] - out_data[0]);
+	}
+
+	cout << "actual data energy: " << data_total << endl;
+	cout << "total energy: " << total + data_total << endl;
+	//cout << w_data << endl;
+
 }
 
 template<class T>
@@ -189,9 +241,11 @@ DEMinimizer<T>::DEMinimizer(int width, int height, std::vector<std::pair<int,int
 	switch (e_func)
 	{
 	case EnergyFunction::membrane:
-			construct_membrane_f_vec(tol, max_iter);
+		construct_membrane_f_vec(tol, max_iter);
+		break;
 	case EnergyFunction::thin_plate:
 		construct_thin_plate_f_vec(tol, max_iter);
+		break;
 	}
 }
 
