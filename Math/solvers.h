@@ -129,7 +129,7 @@ inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T
 			break;
 		}
 
-		std::cout << "\r    " << iter + 1;
+		std::cout << "    " << iter + 1 << "     \r";
  
 	}	
 
@@ -138,6 +138,49 @@ inline std::vector<T> gauss_seidel_solve(const SparseMatrix<S>& A, std::vector<T
 		std::cout << "warning: Gauss-Seidel did not converge before max iterations reached; error: " << err << std::endl;
 	}
 
+
+	return soln;
+}
+
+template<class S, class T>
+inline std::vector<T> sor_solve(const SparseMatrix<S>& A, std::vector<T> b, double tol, int max_iter = UINT32_MAX, double omega = 1.5)
+{
+	double err = 1000 * tol; //just set this to something big enough to be "bad"
+	std::vector<T> soln(A.n_rows()); //initial guess is zero
+
+
+	for (int iter = 0; iter < max_iter; iter++)
+	{
+		for (int i = 0; i < soln.size(); i++)
+		{
+			soln[i] *= 1 - omega;
+			soln[i] += omega / A.at(i, i) * b[i];
+
+			for (auto j = A.at(i).begin(); j != A.at(i).end(); j++)
+			{
+				if (j->first != i)
+				{
+					soln[i] -= (omega / A.at(i, i)) * j->second * soln[j->first];
+				}
+			}
+		}
+
+		err = p_norm(A * soln - b);
+
+		if (err <= tol)
+		{
+			std::cout << "num iterations: " << iter + 1 << std::endl;
+			break;
+		}
+
+		std::cout << "    " << iter + 1 << "     \r";
+	}
+
+
+	if (err > tol)
+	{
+		std::cout << "warning: Gauss-Seidel did not converge before max iterations reached; error: " << err << std::endl;
+	}
 
 	return soln;
 }

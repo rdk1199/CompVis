@@ -114,7 +114,7 @@ inline std::ostream& operator<<(std::ostream& stream, const Color& col)
 
 inline double abs(const Color& col)
 {
-	return std::max({ std::abs(col.r), std::abs(col.g), std::abs(col.b), std::abs(col.a) });;
+	return std::max({ std::abs(col.r), std::abs(col.g), std::abs(col.b), std::abs(col.a) });; //if you don't specify std::abs, the std::max function returns an integer for some reason 
 }
 
 
@@ -175,7 +175,7 @@ public:
 	void bias(Color val);
 	void gamma_correct(double gamma);
 	void abs(); //takes absolute value of every color (in case some color values are negative) -> mainly for measuring relative difference between two images
-	void solidify(); //sets all alpha channels to max
+	void solidify(); //sets all alpha channels to max (255)
 
 
 	//padding

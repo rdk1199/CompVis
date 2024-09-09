@@ -58,7 +58,7 @@ void DEMinimizer<T>::construct_membrane_f_vec(double tol, int max_iter)
 
 	
 
-	f_vec = gauss_seidel_solve(hessian, w_data, tol, max_iter);
+	f_vec = sor_solve(hessian, w_data, tol, max_iter, 1.75);
 
 	//f_vec = vector<Color>(g_width * g_height, Color::red());
 
@@ -68,7 +68,8 @@ void DEMinimizer<T>::construct_membrane_f_vec(double tol, int max_iter)
 	cout << "smoothness energy: " << f_vec * (hessian * f_vec) - (f_vec[in_data[0].second * g_width + in_data[0].first] * f_vec[in_data[0].second * g_width + in_data[0].first]) << endl;
 	cout << "data energy: " << (f_vec[in_data[0].second * g_width + in_data[0].first] * f_vec[in_data[0].second * g_width + in_data[0].first]) - 2 * f_vec * w_data + Color{ 255.0 * 255.0, 0, 0, 255.0 * 255.0 } << endl;
 	*/
-
+	
+	/*
 	Color total = Color::zero();
 
 	for (int i = 0; i < g_width; i++)
@@ -105,7 +106,7 @@ void DEMinimizer<T>::construct_membrane_f_vec(double tol, int max_iter)
 	cout << "actual data energy: " << data_total << endl;
 	cout << "total energy: " << total + data_total << endl;
 	//cout << w_data << endl;
-
+	*/
 }
 
 template<class T>
@@ -118,7 +119,6 @@ void DEMinimizer<T>::construct_thin_plate_f_vec(double tol, int max_iter)
 	{
 		for (int j = 0; j < g_height; j++)
 		{
-
 			int px_ij = j * g_width + i;
 			int px_ij1 = (j + 1) * g_width + i;
 			int px_i1j = j * g_width + i + 1;
@@ -127,67 +127,58 @@ void DEMinimizer<T>::construct_thin_plate_f_vec(double tol, int max_iter)
 			int px_im1j = j * g_width + i - 1;
 			int px_ijm1 = (j - 1) * g_width + i;
 
-			hessian[px_ij][px_ij] += 10.0;
 
-			if (hessian.in_range(px_i1j, px_i1j))
+			if (hessian.in_range(px_i1j, px_im1j)) //first smoothness term
 			{
-				hessian[px_i1j][px_i1j] += 3.0;
+				hessian[px_ij][px_ij] += 4.0;
+				hessian[px_i1j][px_i1j] += 1.0;
 
-				hessian[px_i1j][px_ij] -= 4.0;
-				hessian[px_ij][px_i1j] -= 4.0;
-
-			}
-
-			if (hessian.in_range(px_im1j, px_im1j))
-			{
-				hessian[px_im1j][px_im1j] += 1.0;
-
+				hessian[px_i1j][px_ij] -= 2.0;
+				hessian[px_ij][px_i1j] -= 2.0;
 
 				hessian[px_ij][px_im1j] -= 2.0;
 				hessian[px_im1j][px_ij] -= 2.0;
 
-				
-			}
+				hessian[px_im1j][px_im1j] += 1.0;
 
-			if (hessian.in_range(px_ij1, px_ij1))
-			{
-				hessian[px_ij1][px_ij1] += 1.0;
-
-				hessian[px_ij][px_ij1] -= 2.0;
-				hessian[px_ij1][px_ij] -= 2.0;
-
-			}
-
-			if (hessian.in_range(px_ijm1, px_ijm1))
-			{
-				hessian[px_ijm1][px_ijm1] += 1.0;
-
-				hessian[px_ij][px_ijm1] -= 2.0;
-				hessian[px_ijm1][px_ij] -= 2.0;
-			}
-
-			if (hessian.in_range(px_im1j, px_i1j))
-			{
 				hessian[px_im1j][px_i1j] += 1.0;
 				hessian[px_i1j][px_im1j] += 1.0;
 			}
 
-			if (hessian.in_range(px_ijm1, px_ij1))
+			if (hessian.in_range(px_ij1, px_ijm1)) //third smoothness term
 			{
+				hessian[px_ij][px_ij] += 4.0;
+
+				hessian[px_ijm1][px_ijm1] += 1.0;
+
+				hessian[px_ij1][px_ij1] += 1.0;
+
+				hessian[px_ij][px_ijm1] -= 2.0;
+				hessian[px_ijm1][px_ij] -= 2.0;
+
+				hessian[px_ij][px_ij1] -= 2.0;
+				hessian[px_ij1][px_ij] -= 2.0;
+
 				hessian[px_ijm1][px_ij1] += 1.0;
-				hessian[px_ij1][px_ijm1] += 1.0;				
+				hessian[px_ij1][px_ijm1] += 1.0;
 			}
 
-			if (hessian.in_range(px_ij1, px_ij1))
+
+
+			if (hessian.in_range(px_i1j1, px_i1j1)) //second smoothness term
 			{
+				hessian[px_ij][px_ij] += 2.0;
+				hessian[px_i1j][px_i1j] += 2.0;
+
+
+				hessian[px_i1j][px_ij] -= 2.0;
+				hessian[px_ij][px_i1j] -= 2.0;
+
 				hessian[px_ij1][px_ij1] += 2.0;
 
 				hessian[px_ij][px_ij1] -= 2.0;
 				hessian[px_ij1][px_ij] -= 2.0;
-			}
 
-			if (hessian.in_range(px_i1j1, px_i1j1))
-			{
 				hessian[px_i1j1][px_i1j1] += 2.0;
 
 
@@ -203,7 +194,6 @@ void DEMinimizer<T>::construct_thin_plate_f_vec(double tol, int max_iter)
 
 				hessian[px_i1j][px_ij1] += 2.0;
 				hessian[px_ij1][px_i1j] += 2.0;
-
 			}
 		}
 	}
@@ -218,7 +208,7 @@ void DEMinimizer<T>::construct_thin_plate_f_vec(double tol, int max_iter)
 		hessian[px_index][px_index] += constraint; //add c_ij
 	}
 
-	f_vec = gauss_seidel_solve(hessian, w_data, tol, max_iter);
+	f_vec = sor_solve(hessian, w_data, tol, max_iter, 1.75);
 }
 
 template<class T>

@@ -216,6 +216,7 @@ orig.save("Images/regression_orig.png");
 nw_interp.save("Images/regression_nw_interp.png");
 */
 
+
 Image bird_sample(bird.width(), bird.height(), Color::black());
 
 vector<std::pair<int, int>> bird_in_int;
@@ -226,7 +227,7 @@ for (int i = 0; i < bird_sample.width(); i += 1)
 {
 	for (int j = 0; j < bird_sample.height(); j += 1)
 	{
-		if (g_rand.flip(.3f))
+		if (g_rand.flip(.01f))
 		{
 			bird_sample[i][j] = bird[i][j];
 			bird_in.push_back({ i,j });
@@ -277,7 +278,7 @@ for (int i = 0; i < bird.width(); i++)
 	}
 }*/
 
-DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 1, 4, EnergyFunction::membrane, .0000001, 1000);
+DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 1, 1, EnergyFunction::thin_plate, .0000000000000001, 1500);
 
 Image bird_demin_img(bird.width(), bird.height());
 
@@ -296,7 +297,7 @@ bird_demin_img.save("Images/bird_demin_low_c.png");
 Image::abs_diff(bird, bird_demin_img).save("Images/bird_demin_diff.png");
 
 
-/*
+
 int corner_size = 100;
 vector<std::pair<int, int>> in = { {10, 10}, {10, corner_size - 10}, { corner_size - 10, 10 }, { corner_size - 10, corner_size - 10 }};
 vector<Color> out =  { Color::black(), Color::red(), Color::green(), Color::blue() };
@@ -307,7 +308,7 @@ small_col_corner[10][corner_size-10] = { 255.0, 0.0, 0.0, 255.0 };
 small_col_corner[corner_size-10][10] = { 0.0, 255.0, 0.0, 255.0 };
 small_col_corner[corner_size-10][corner_size-10] = { 0.0, 0.0, 255.0, 255.0 };
 
-DEMinimizer<Color> demin(corner_size + 1, corner_size + 1, in, out, 1, 1, EnergyFunction::membrane, .00000001, 120000);
+DEMinimizer<Color> demin(corner_size + 1, corner_size + 1, in, out, 1, 1, EnergyFunction::thin_plate, .00000001, 120000);
 
 Image demin_interp(corner_size + 1, corner_size + 1);
 
@@ -323,7 +324,7 @@ for (int i = 0; i < corner_size + 1; i++)
 small_col_corner.save("Images/corner_orig.png");
 demin_interp.save("Images/corner_demin.png");
 
-*/
+
 bird_sample.save("Images/bird_sample.png");
 //bird_regress.save("Images/bird_regress.png");
 //bird_ridge_regress.save("Images/bird_ridge_regress.png");
