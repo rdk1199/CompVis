@@ -26,6 +26,30 @@ struct Color
 	static Color zero() { return { 0.0, 0.0, 0.0, 0.0 }; }
 };
 
+inline bool operator<(const Color& a, const Color& b)
+{
+	if (a.r < b.r)
+	{
+		return true;
+	}
+
+	else if (a.r == b.r && a.g < b.g)
+	{
+		return true;
+	}
+
+	else if (a.r == b.r && a.g == b.g && a.b < b.b)
+	{
+		return true;
+	}
+
+	else if (a.r == b.r && a.g == b.g && a.b == b.b && a.a < b.a)
+	{
+		return true;
+	}
+
+	return false; 
+}
 
 inline Color operator+(const Color& a, const Color& b)
 {

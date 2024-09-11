@@ -12,6 +12,8 @@
 #include "ModelFitting/kernel_regression.h"
 #include "ModelFitting/demin.h"
 
+#include "Classifiers/nn_classifier.h"
+
 using std::cout;
 using std::endl;
 
@@ -216,7 +218,7 @@ orig.save("Images/regression_orig.png");
 nw_interp.save("Images/regression_nw_interp.png");
 */
 
-
+/*
 Image bird_sample(bird.width(), bird.height(), Color::black());
 
 vector<std::pair<int, int>> bird_in_int;
@@ -236,6 +238,11 @@ for (int i = 0; i < bird_sample.width(); i += 1)
 		}
 	}
 }
+
+
+bird_sample.save("Images/bird_sample.png");
+
+*/
 
 /*
 ExactKernelRegression<vector<float>, Color>bird_f(bird_in, bird_out, 100, gaussian_basis);
@@ -277,7 +284,7 @@ for (int i = 0; i < bird.width(); i++)
 		bird_nw_regress[i][j].a = 255.0f;
 	}
 }*/
-
+/*
 DEMinimizer<Color> bird_demin(bird.width(), bird.height(), bird_in_int, bird_out, 1, 1, EnergyFunction::thin_plate, .0000000000000001, 1500);
 
 Image bird_demin_img(bird.width(), bird.height());
@@ -323,9 +330,8 @@ for (int i = 0; i < corner_size + 1; i++)
 
 small_col_corner.save("Images/corner_orig.png");
 demin_interp.save("Images/corner_demin.png");
+*/
 
-
-bird_sample.save("Images/bird_sample.png");
 //bird_regress.save("Images/bird_regress.png");
 //bird_ridge_regress.save("Images/bird_ridge_regress.png");
 //bird_nw_regress.save("Images/bird_nw_regress.png");
@@ -336,6 +342,59 @@ bird_sample.save("Images/bird_sample.png");
 
 //test_gauss_elimination();
 //test_gauss_seidel();
+
+
+int nn_width = 1000;
+Image nn_test_in(nn_width, nn_width, Color::zero());
+Image nn_test_out(nn_width, nn_width, Color::zero());
+
+vector<LabeledData<vector<float>, Color>> data;
+
+//build test grid
+for (int i = 0; i < nn_width; i += 100)
+{
+	for (int j = 0; j < nn_width; j += 100)
+	{
+		if (i <= nn_width/2 && j <= nn_width / 2)
+		{
+			nn_test_in[i][j] = Color::red();
+			data.push_back(LabeledData<vector<float>, Color>{ {i, j}, Color::red()});
+		}
+
+		if (i > nn_width / 2 && j <= nn_width / 2)
+		{
+			nn_test_in[i][j] = Color::green();
+			data.push_back(LabeledData<vector<float>, Color>{ {i, j}, Color::green()});
+		}
+
+		if (i <= nn_width / 2 && j > nn_width / 2)
+		{
+			nn_test_in[i][j] = Color::blue();
+			data.push_back(LabeledData<vector<float>, Color>{ {i, j}, Color::blue()});
+		}
+
+		if (i > nn_width / 2 && j > nn_width / 2)
+		{
+			nn_test_in[i][j] = Color::black();
+			data.push_back(LabeledData<vector<float>, Color>{ {i, j}, Color::black()});
+		}
+	}
+}
+
+
+
+NNClassifier<vector<float>, Color> nn(vector<Color>({ Color::red(), Color::green(), Color::blue(), Color::black() }), data, euc_dist);
+
+for (int i = 0; i < nn_test_out.width(); i++)
+{
+	for (int j = 0; j < nn_test_out.height(); j++)
+	{
+		nn_test_out[i][j] = nn({ i, j }, 10);
+	}
+}
+
+nn_test_in.save("Images/nn_test_in.png");
+nn_test_out.save("Images/nn_test_out.png");
 
 	return 0;
 }

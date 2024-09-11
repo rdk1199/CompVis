@@ -87,6 +87,8 @@ inline double abs(const std::vector<T>& v) //magnitude
 	return std::sqrt(v * v);
 }
 
+
+
 template<class T>
 inline double p_norm(const std::vector<T>& v, double p = 0)
 {
@@ -117,6 +119,12 @@ inline double p_norm(const std::vector<T>& v, double p = 0)
 	}
 
 	return std::pow(sum, 1 / p);
+}
+
+template<class T>
+inline double euc_dist(const std::vector<T>& v, const std::vector<T>& w)
+{
+	return p_norm(v - w, 2);
 }
 
 template<class T>
