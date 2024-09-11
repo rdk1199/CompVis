@@ -2,6 +2,9 @@
 
 #include <cmath>
 
+#include "numbers.h"
+
+
 inline double bicubic_spline(double x, double a = -1)
 {
 	double out;
@@ -54,5 +57,12 @@ inline T tp_spline(T r, double c)
 	return r * r * std::log(r);
 }
 
+template<class T>
+inline double gaussian(const std::vector<T>& x, T cov_det, const std::vector<T>& mean, const Matrix<T>& cov_inv)
+{
+	double dim = x.size();
 
+	return (1.0 / std::pow(2 * PI, dim / 2.0)) * (1.0 / std::sqrt(abs(cov_det))) * exp(-0.5 * (x - mean) * ((cov_inv) * (x - mean)));
+
+}
 

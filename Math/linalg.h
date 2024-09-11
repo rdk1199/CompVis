@@ -30,6 +30,13 @@ inline std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b
 	return out;
 }
 
+template<class T>
+inline std::vector<T> operator+=(std::vector<T>& a, const std::vector<T>& b)
+{
+	a = a + b;
+	return a;
+}
+
 
 template<class T>
 inline std::vector<T> operator-(const std::vector<T>& a, const std::vector<T>& b)
@@ -49,6 +56,12 @@ inline std::vector<T> operator-(const std::vector<T>& a, const std::vector<T>& b
 	return out;
 }
 
+template<class T>
+inline std::vector<T> operator-=(std::vector<T>& a, const std::vector<T>& b)
+{
+	a = a - b;
+	return a;
+}
 
 template<class T>
 inline T operator*(const std::vector<T>& a, const std::vector<T>& b) //dot product
@@ -79,6 +92,35 @@ inline std::vector<T> operator*(const S& c, const std::vector<T>& v)
 	}
 
 	return out;
+}
+
+
+template<class S, class T>
+inline std::vector<T> operator*=(std::vector<T>& a, const S& c)
+{
+	a = c * a;
+	return a;
+}
+
+template<class S, class T> //scalar division
+inline std::vector<T> operator/(const std::vector<T>& v, const S& c)
+{
+	std::vector<T> out;
+
+	for (int i = 0; i < v.size(); i++)
+	{
+		out.push_back(v[i]/c);
+	}
+
+	return out;
+}
+
+template<class S, class T> 
+inline std::vector<T> operator/=(std::vector<T>& v, const S& c)
+{
+	v = v / c;
+
+	return v;
 }
 
 template<class T>
@@ -119,6 +161,18 @@ inline double p_norm(const std::vector<T>& v, double p = 0)
 	}
 
 	return std::pow(sum, 1 / p);
+}
+
+template<class T>
+inline std::vector<T> pow(const std::vector<T>& v, double p)
+{
+	std::vector<T> out;
+	for (int i = 0; i < v.size(); i++)
+	{
+		out.push_back(pow(v[i], p));
+	}
+
+	return out;
 }
 
 template<class T>
