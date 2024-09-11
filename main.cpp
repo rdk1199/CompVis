@@ -348,7 +348,8 @@ int nn_width = 1000;
 Image nn_test_in(nn_width, nn_width, Color::zero());
 Image nn_test_out(nn_width, nn_width, Color::zero());
 
-vector<LabeledData<vector<float>, Color>> data;
+vector<vector<float>> points;
+vector<Color> classes;
 
 //build test grid
 for (int i = 0; i < nn_width; i += 100)
@@ -358,32 +359,36 @@ for (int i = 0; i < nn_width; i += 100)
 		if (i <= nn_width/2 && j <= nn_width / 2)
 		{
 			nn_test_in[i][j] = Color::red();
-			data.push_back(LabeledData<vector<float>, Color>{ {i, j}, Color::red()});
+			points.push_back({i, j});
+			classes.push_back(Color::red());
 		}
 
 		if (i > nn_width / 2 && j <= nn_width / 2)
 		{
 			nn_test_in[i][j] = Color::green();
-			data.push_back(LabeledData<vector<float>, Color>{ {i, j}, Color::green()});
+			points.push_back({ i, j });
+			classes.push_back(Color::green());
 		}
 
 		if (i <= nn_width / 2 && j > nn_width / 2)
 		{
 			nn_test_in[i][j] = Color::blue();
-			data.push_back(LabeledData<vector<float>, Color>{ {i, j}, Color::blue()});
+			points.push_back({ i, j });
+			classes.push_back(Color::blue());
 		}
 
 		if (i > nn_width / 2 && j > nn_width / 2)
 		{
 			nn_test_in[i][j] = Color::black();
-			data.push_back(LabeledData<vector<float>, Color>{ {i, j}, Color::black()});
+			points.push_back({ i, j });
+			classes.push_back(Color::black());
 		}
 	}
 }
 
 
 
-NNClassifier<vector<float>, Color> nn(vector<Color>({ Color::red(), Color::green(), Color::blue(), Color::black() }), data, euc_dist);
+NNClassifier<vector<float>, Color> nn(vector<Color>({ Color::red(), Color::green(), Color::blue(), Color::black() }), points, classes, euc_dist);
 
 for (int i = 0; i < nn_test_out.width(); i++)
 {
