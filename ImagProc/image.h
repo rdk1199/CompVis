@@ -22,7 +22,7 @@ struct Color
 	static Color red() { return { 255.0, 0.0, 0.0, 255.0 }; }
 	static Color green() { return { 0.0, 255.0, 0.0, 255.0 }; }
 	static Color blue() { return { 0.0, 0.0, 255.0, 255.0 }; }
-	static Color gray(double val, double alpha = 255.0) { return { val, val, val, alpha }; } //make grayscale color with given value and alpha
+	static Color gray(double val = 127.0, double alpha = 255.0) { return { val, val, val, alpha }; } //make grayscale color with given value and alpha
 	static Color zero() { return { 0.0, 0.0, 0.0, 0.0 }; }
 };
 
