@@ -14,6 +14,8 @@
 
 #include "Classifiers/nn_classifier.h"
 
+#include "DataHandling/gs_image_loader.h"
+
 using std::cout;
 using std::endl;
 
@@ -343,7 +345,7 @@ demin_interp.save("Images/corner_demin.png");
 //test_gauss_elimination();
 //test_gauss_seidel();
 
-
+/*
 int nn_width = 1000;
 Image nn_test_in(nn_width, nn_width, Color::zero());
 Image nn_test_out(nn_width, nn_width, Color::zero());
@@ -400,6 +402,18 @@ for (int i = 0; i < nn_test_out.width(); i++)
 
 nn_test_in.save("Images/nn_test_in.png");
 nn_test_out.save("Images/nn_test_out.png");
+*/
+
+int mnist_label;
+Image mnist_test = GSImageLoader::load_as_image("Data/mnist/parsed_mnist/training/tr_img_0", mnist_label);
+cout << mnist_label << endl;
+
+vector<double> mnist_vec_test = GSImageLoader::load_as_vector("Data/mnist/parsed_mnist/training/tr_img_0", mnist_label);
+
+cout << mnist_vec_test << endl;
+
+mnist_test.save("Images/mnist_test.png");
+
 
 	return 0;
 }
