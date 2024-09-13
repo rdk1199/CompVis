@@ -13,6 +13,7 @@
 #include "ModelFitting/demin.h"
 
 #include "Classifiers/nn_classifier.h"
+#include "Classifiers/classifier_tests.h"
 
 #include "DataHandling/gs_image_loader.h"
 
@@ -404,6 +405,7 @@ nn_test_in.save("Images/nn_test_in.png");
 nn_test_out.save("Images/nn_test_out.png");
 */
 
+/*
 int mnist_label;
 Image mnist_test = GSImageLoader::load_as_image("Data/mnist/parsed_mnist/training/tr_img_0", mnist_label);
 cout << mnist_label << endl;
@@ -413,7 +415,10 @@ vector<double> mnist_vec_test = GSImageLoader::load_as_vector("Data/mnist/parsed
 cout << mnist_vec_test << endl;
 
 mnist_test.save("Images/mnist_test.png");
+*/
 
+
+test_naive_bayes_mnist("Data/mnist/parsed_mnist");
 
 	return 0;
 }

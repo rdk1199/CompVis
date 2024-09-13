@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <iostream>
 
 #include "numbers.h"
 
@@ -58,11 +59,22 @@ inline T tp_spline(T r, double c)
 }
 
 template<class T>
+inline double log_gaussian(const std::vector<T>& x, T log_cov_det, const std::vector<T>& mean, const Matrix<T>& cov_inv)
+{
+	double dim = x.size();
+
+	double out = -(dim / 2.0) * std::log(2 * PI) - 0.5 * log_cov_det - 0.5 * (x - mean) * ((cov_inv) * (x - mean));
+
+	return out;
+}
+
+template<class T>
 inline double gaussian(const std::vector<T>& x, T cov_det, const std::vector<T>& mean, const Matrix<T>& cov_inv)
 {
 	double dim = x.size();
 
-	return (1.0 / std::pow(2 * PI, dim / 2.0)) * (1.0 / std::sqrt(abs(cov_det))) * exp(-0.5 * (x - mean) * ((cov_inv) * (x - mean)));
+	double out = (1.0 / std::pow(2 * PI, dim / 2.0)) * (1.0 / std::sqrt(abs(cov_det))) * exp(-0.5 * (x - mean) * ((cov_inv) * (x - mean)));
 
+	return out;
 }
 
