@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "numbers.h"
+#include "linalg.h"
 
 
 inline double bicubic_spline(double x, double a = -1)
@@ -76,5 +77,11 @@ inline double gaussian(const std::vector<T>& x, T cov_det, const std::vector<T>&
 	double out = (1.0 / std::pow(2 * PI, dim / 2.0)) * (1.0 / std::sqrt(abs(cov_det))) * exp(-0.5 * (x - mean) * ((cov_inv) * (x - mean)));
 
 	return out;
+}
+
+template<class T>
+inline T logistic(T x)
+{
+	return 1.0 / (1.0 + exp(-x));
 }
 
